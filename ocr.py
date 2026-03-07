@@ -53,7 +53,7 @@ def fetch_screenshot() -> bytes:
         (1805, 381),  # Tools
     ]:
         subprocess.call(["adb", "shell", "input", "tap", f"{x}", f"{y}"])
-        time.sleep(1)
+        time.sleep(0.5)
     out = subprocess.run(
         ["adb", "exec-out", "screencap", "-p"],
         stdout=subprocess.PIPE,
@@ -122,9 +122,6 @@ def run_ocr(
                 region = scrshot_img.crop((left, top, right, bottom))
                 if item_exists(region):
                     found_items.append(text)
-                else:
-                    logger.info(f"跳过已售完：{text}")
-                    region.save(f"{text}.png")
 
             confidence: np.float64
             kept += 1
@@ -141,7 +138,7 @@ def run_ocr(
 def sleep_until_next_10min():
     now = datetime.now()
     next_time = now.replace(second=0, microsecond=0) + timedelta(minutes=10)
-    next_time = next_time.replace(minute=(next_time.minute // 10) * 10, second=10)
+    next_time = next_time.replace(minute=(next_time.minute // 10) * 10, second=5)
 
     if next_time <= now:
         next_time += timedelta(minutes=10)
