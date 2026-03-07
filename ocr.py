@@ -58,7 +58,7 @@ def fetch_screenshot() -> bytes:
         (1805, 381),  # Tools
     ]:
         subprocess.call(["adb", "shell", "input", "tap", f"{x}", f"{y}"])
-        time.sleep(0.5)
+        time.sleep(1)
     out = subprocess.run(
         ["adb", "exec-out", "screencap", "-p"],
         stdout=subprocess.PIPE,
