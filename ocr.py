@@ -11,11 +11,16 @@ from loguru import logger
 
 from detect_item import item_exists
 
-TARGET_ITEM = [
+ADDITION_ITEMS = [
+    "火盆",
     "造雪机",
-    "流星杖",
-    "农田置换卡",
+    "引雷针",
     "造型喷雾",
+    "农田置换卡",
+]
+
+TARGET_ITEM = [
+    "流星杖",
     "月球标准洒水器",
     "月球白银洒水器",
     "月球黄金洒水器",
@@ -75,7 +80,9 @@ def init_reader() -> easyocr.Reader:
 def run_ocr(
     reader: easyocr.Reader,
     pic: bytes = None,
-):
+) -> list[str]:
+    found_items: list[str] = []
+
     try:
         screen_shot = pic or fetch_screenshot()
         scrshot_img = Image.open(io.BytesIO(screen_shot))
@@ -98,7 +105,6 @@ def run_ocr(
 
         kept = 0
 
-        found_items: list[str] = []
         for coords, text, confidence in result:
             if confidence < CONFIDENCE:
                 continue
@@ -115,7 +121,7 @@ def run_ocr(
                 font=font,
             )
 
-            if text in TARGET_ITEM:
+            if text in TARGET_ITEM or text in ADDITION_ITEMS:
                 top_left, _, bottom_right, _ = pts
                 left, top = top_left
                 right, bottom = bottom_right
@@ -126,13 +132,16 @@ def run_ocr(
             confidence: np.float64
             kept += 1
 
-        if found_items:
+        # must have one of valuable thing
+        if found_items and (set(found_items) - set(ADDITION_ITEMS)):
             found_things = "，".join(map(lambda n: ALIAS_MAP.get(n, n), found_items))
             logger.info(f"发现物品: {found_things}")
         img.save(filename)
 
     except Exception as e:
         logger.exception(f"OCR 任务失败: {e}")
+
+    return found_items
 
 
 def sleep_until_next_10min():

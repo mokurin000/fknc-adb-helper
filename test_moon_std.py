@@ -8,7 +8,7 @@ def main():
     with open("test/moon_std.png", "rb") as f:
         pic = f.read()
 
-    run_ocr(reader, pic)
+    assert "月球标准洒水器" in run_ocr(reader, pic)
 
 
 if __name__ == "__main__":
