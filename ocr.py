@@ -10,6 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 from loguru import logger
 
 os.makedirs("pics", exist_ok=True)
+os.makedirs("test-pics", exist_ok=True)
 
 CONFIDENCE = 0.7
 font = ImageFont.truetype("msyh.ttc", 20)  # 微软雅黑
@@ -45,18 +46,24 @@ def init_reader() -> easyocr.Reader:
 
 def run_ocr(
     reader: easyocr.Reader,
+    pic: bytes = None,
 ):
     try:
-        screen_shot = fetch_screenshot()
+        screen_shot = pic or fetch_screenshot()
         scrshot_img = Image.open(io.BytesIO(screen_shot))
+        scrshot_img.save("screenshot.png")
 
         logger.info("开始 OCR 识别")
         result = reader.readtext("screenshot.png")
         logger.info(f"OCR 完成，共识别 {len(result)} 个区域")
 
         ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
-        filename = f"pics/result_{ts}.png"
-        scr_filename = f"pics/screenshot_{ts}.png"
+        if pic is None:
+            filename = f"pics/result_{ts}.png"
+            scr_filename = f"pics/screenshot_{ts}.png"
+        else:
+            filename = f"test-pics/result_{ts}.png"
+            scr_filename = f"test-pics/screenshot_{ts}.png"
         with open(scr_filename, "wb") as f:
             f.write(screen_shot)
 

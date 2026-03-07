@@ -1,0 +1,15 @@
+from ocr import run_ocr, init_reader, logger
+
+
+def main():
+    reader = init_reader()
+
+    logger.info("loading test image...")
+    with open("test/moon_std.png", "rb") as f:
+        pic = f.read()
+
+    run_ocr(reader, pic)
+
+
+if __name__ == "__main__":
+    main()
