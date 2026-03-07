@@ -14,14 +14,22 @@ from detect_item import item_exists
 TARGET_ITEM = [
     "造雪机",
     "流星杖",
+    "农田置换卡",
+    "造型喷雾",
     "月球标准洒水器",
     "月球白银洒水器",
     "月球黄金洒水器",
     "白银洒水器",
     "黄金洒水器",
-    "农田置换卡",
-    "造型喷雾",
 ]
+
+ALIAS_MAP = {
+    "月球标准洒水器": "月标",
+    "月球白银洒水器": "月白",
+    "月球黄金洒水器": "月金",
+    "白银洒水器": "地白",
+    "黄金洒水器": "地金",
+}
 
 os.makedirs("pics", exist_ok=True)
 os.makedirs("test-pics", exist_ok=True)
@@ -111,7 +119,7 @@ def run_ocr(
             kept += 1
 
         if found_items:
-            found_things = "，".join(found_items)
+            found_things = "，".join(map(lambda n: ALIAS_MAP.get(n, n), found_items))
             logger.info(f"发现物品: {found_things}")
         img.save(filename)
 
