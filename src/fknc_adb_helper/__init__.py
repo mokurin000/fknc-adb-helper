@@ -1,7 +1,6 @@
 import io
 import os
 import time
-import subprocess
 from datetime import datetime, timedelta
 
 import easyocr
@@ -9,7 +8,8 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from loguru import logger
 
-from detect_item import item_exists
+from fknc_adb_helper.adb_utils import fetch_screenshot
+from fknc_adb_helper.detect_item import item_exists
 
 ADDITION_ITEMS = [
     "火盆",
@@ -48,23 +48,6 @@ logger.add(
     retention="7 days",
     level="INFO",
 )
-
-
-def fetch_screenshot() -> bytes:
-    # hard-coded for 1920x1080
-    for x, y in [
-        (1804, 149),  # Close
-        (1773, 89),  # Store
-        (1805, 381),  # Tools
-    ]:
-        subprocess.call(["adb", "shell", "input", "tap", f"{x}", f"{y}"])
-        time.sleep(1)
-    out = subprocess.run(
-        ["adb", "exec-out", "screencap", "-p"],
-        stdout=subprocess.PIPE,
-        check=True,
-    ).stdout
-    return out
 
 
 def init_reader() -> easyocr.Reader:
@@ -131,7 +114,9 @@ def run_ocr(
             kept += 1
 
         # must have one of valuable thing
-        if found_items and (set(found_items) - set(ADDITION_ITEMS)):
+        if pic is not None or (
+            found_items and (set(found_items) - set(ADDITION_ITEMS))
+        ):
             found_things = "，".join(map(lambda n: ALIAS_MAP.get(n, n), found_items))
             logger.info(f"发现物品: {found_things}")
             img.save(filename)

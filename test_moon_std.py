@@ -1,4 +1,4 @@
-from ocr import run_ocr, init_reader, logger
+from src.fknc_adb_helper import run_ocr, init_reader, logger
 
 
 def main():

@@ -12,6 +12,12 @@ dependencies = [
     "torchvision>=0.25.0",
 ]
 
+[project.scripts]
+fknc-adb-helper = "fknc_adb_helper.__init__:main"
+
+[tool.uv]
+package = true
+
 [[tool.uv.index]]
 name = "bfsu"
 url = "https://mirrors.bfsu.edu.cn/pypi/web/simple"
