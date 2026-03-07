@@ -1,3 +1,4 @@
+import os
 import time
 import shutil
 import subprocess
@@ -7,6 +8,8 @@ import easyocr
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from loguru import logger
+
+os.makedirs("pics", exist_ok=True)
 
 CONFIDENCE = 0.7
 font = ImageFont.truetype("msyh.ttc", 20)  # 微软雅黑
@@ -49,8 +52,8 @@ def run_ocr(reader: easyocr.Reader):
         logger.info(f"OCR 完成，共识别 {len(result)} 个区域")
 
         ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
-        filename = f"result_{ts}.png"
-        scr_filename = f"screenshot_{ts}.png"
+        filename = f"pics/result_{ts}.png"
+        scr_filename = f"pics/screenshot_{ts}.png"
 
         shutil.copy2("screenshot.png", scr_filename)
 

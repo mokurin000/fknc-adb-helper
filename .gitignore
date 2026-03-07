@@ -9,5 +9,5 @@ wheels/
 # Virtual environments
 .venv
 
-/*.png
+/pics
 /*.log
