@@ -12,37 +12,30 @@ from loguru import logger
 from fknc_adb_helper.adb_utils import fetch_screenshot
 from fknc_adb_helper.detect_item import item_exists
 
-DEBUG = False
-
 ITEM_BG_WIDTH = 165
 ITEM_PRICE_WIDTH = 50
 ITEM_HEIGHT = 40
 
+TARGET_ITEMS = [
+    "月球黄金洒水器",
+    "黄金洒水器",
+    "流星杖",
+    "月球白银洒水器",
+    "白银洒水器",
+    "月球标准洒水器",
+]
+
 ADDITION_ITEMS = [
+    "农田置换卡",
+    "幽灵药水",
+    "引雷针",
     "火盆",
     "造雪机",
-    "引雷针",
+    "唤醒机",
     "造型喷雾",
-    "幽灵药水",
-    "农田置换卡",
     "标准洒水器",
 ]
-if DEBUG:
-    ADDITION_ITEMS += [
-        "水壶",
-        "隐身喷雾",
-        "简易洒水器",
-        "月球简易洒水器",
-    ]
 
-TARGET_ITEM = [
-    "流星杖",
-    "月球标准洒水器",
-    "月球白银洒水器",
-    "月球黄金洒水器",
-    "白银洒水器",
-    "黄金洒水器",
-]
 
 ALIAS_MAP = {
     "月球简易洒水器": "月简",
@@ -138,7 +131,7 @@ def run_ocr(
             left, top = top_left
             right, bottom = bottom_right
 
-            if text in TARGET_ITEM or text in ADDITION_ITEMS:
+            if text in TARGET_ITEMS or text in ADDITION_ITEMS:
                 region = scrshot_img.crop((left, top, right, bottom))
                 if item_exists(region):
                     num_bottom = top + 10
@@ -163,16 +156,24 @@ def run_ocr(
             kept += 1
 
         # must have one of valuable thing
-        if DEBUG or pic is not None or (set(found_items) - set(ADDITION_ITEMS)):
+        if pic is not None or (set(found_items) - set(ADDITION_ITEMS)):
 
             def proc_item(p):
                 k, v = p
                 return f"{ALIAS_MAP.get(k, k)}{v}"
 
-            found_things = "，".join(map(proc_item, found_items.items()))
+            found_things = "，".join(
+                map(
+                    proc_item,
+                    sorted(
+                        found_items.items(),
+                        key=lambda p: (TARGET_ITEMS + ADDITION_ITEMS).index(p[0]),
+                    ),
+                )
+            )
             if found_things:
                 logger.info(f"发现物品: {found_things}")
-                if not DEBUG and pic is None:
+                if pic is None:
                     # TODO: push to QQ group?
                     pass
             img.save(filename)
