@@ -1,6 +1,6 @@
+import io
 import os
 import time
-import shutil
 import subprocess
 from datetime import datetime, timedelta
 
@@ -22,15 +22,15 @@ logger.add(
 )
 
 
-def fetch_screenshot():
+def fetch_screenshot() -> bytes:
     logger.info("开始截图")
-    with open("screenshot.png", "wb") as pic:
-        subprocess.run(
-            ["adb", "exec-out", "screencap", "-p"],
-            stdout=pic,
-            check=True,
-        )
+    out = subprocess.run(
+        ["adb", "exec-out", "screencap", "-p"],
+        stdout=subprocess.PIPE,
+        check=True,
+    ).stdout
     logger.info("截图完成")
+    return out
 
 
 def init_reader() -> easyocr.Reader:
@@ -45,22 +45,22 @@ def init_reader() -> easyocr.Reader:
 
 def run_ocr(
     reader: easyocr.Reader,
-    img_path: str = "screenshot.png",
 ):
     try:
-        fetch_screenshot()
+        screen_shot = fetch_screenshot()
+        scrshot_img = Image.open(io.BytesIO(screen_shot))
 
         logger.info("开始 OCR 识别")
-        result = reader.readtext(img_path)
+        result = reader.readtext("screenshot.png")
         logger.info(f"OCR 完成，共识别 {len(result)} 个区域")
 
         ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
         filename = f"pics/result_{ts}.png"
         scr_filename = f"pics/screenshot_{ts}.png"
+        with open(scr_filename, "wb") as f:
+            f.write(screen_shot)
 
-        shutil.copy2(img_path, scr_filename)
-
-        img = Image.open(img_path)
+        img = scrshot_img
         draw = ImageDraw.Draw(img)
 
         kept = 0
