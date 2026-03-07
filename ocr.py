@@ -82,6 +82,7 @@ def run_ocr(
 
         kept = 0
 
+        found_items: list[str] = []
         for coords, text, confidence in result:
             if confidence < CONFIDENCE:
                 continue
@@ -104,11 +105,14 @@ def run_ocr(
                 right, bottom = bottom_right
                 region = scrshot_img.crop((left, top, right, bottom))
                 if item_exists(region):
-                    logger.info(f"发现物品：{text}")
+                    found_items.append(text)
 
             confidence: np.float64
             kept += 1
 
+        if found_items:
+            found_things = "，".join(found_items)
+            logger.info(f"发现物品: {found_things}")
         img.save(filename)
 
     except Exception as e:
