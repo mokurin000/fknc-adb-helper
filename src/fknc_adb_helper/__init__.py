@@ -118,7 +118,8 @@ def run_ocr(
             found_items and (set(found_items) - set(ADDITION_ITEMS))
         ):
             found_things = "，".join(map(lambda n: ALIAS_MAP.get(n, n), found_items))
-            logger.info(f"发现物品: {found_things}")
+            if found_things:
+                logger.info(f"发现物品: {found_things}")
             img.save(filename)
 
             with open(scr_filename, "wb") as f:
