@@ -97,8 +97,6 @@ def run_ocr(
         else:
             filename = f"test-pics/result_{ts}.png"
             scr_filename = f"test-pics/screenshot_{ts}.png"
-        with open(scr_filename, "wb") as f:
-            f.write(screen_shot)
 
         img = scrshot_img.copy()
         draw = ImageDraw.Draw(img)
@@ -136,7 +134,10 @@ def run_ocr(
         if found_items and (set(found_items) - set(ADDITION_ITEMS)):
             found_things = "，".join(map(lambda n: ALIAS_MAP.get(n, n), found_items))
             logger.info(f"发现物品: {found_things}")
-        img.save(filename)
+            img.save(filename)
+
+            with open(scr_filename, "wb") as f:
+                f.write(screen_shot)
 
     except Exception as e:
         logger.exception(f"OCR 任务失败: {e}")
