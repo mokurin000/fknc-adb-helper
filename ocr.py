@@ -9,6 +9,17 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from loguru import logger
 
+TARGET_ITEM = [
+    "造雪机",
+    "流星杖",
+    "月球简易洒水器",
+    "月球标准洒水器",
+    "月球白银洒水器",
+    "月球黄金洒水器",
+    "白银洒水器",
+    "黄金洒水器",
+]
+
 os.makedirs("pics", exist_ok=True)
 os.makedirs("test-pics", exist_ok=True)
 
@@ -67,7 +78,7 @@ def run_ocr(
         with open(scr_filename, "wb") as f:
             f.write(screen_shot)
 
-        img = scrshot_img
+        img = scrshot_img.copy()
         draw = ImageDraw.Draw(img)
 
         kept = 0
@@ -88,6 +99,13 @@ def run_ocr(
                 font=font,
             )
 
+            if text in TARGET_ITEM:
+                top_left, _, bottom_right, _ = pts
+                left, top = top_left
+                right, bottom = bottom_right
+                region = scrshot_img.crop((left, top, right, bottom))
+                region.save(f"{text}.png")
+
             confidence: np.float64
             kept += 1
 
@@ -95,8 +113,8 @@ def run_ocr(
 
         logger.info(f"结果保存: {filename} (置信度≥{CONFIDENCE} 的 {kept} 个)")
 
-    except Exception:
-        logger.exception("OCR 任务失败")
+    except Exception as e:
+        logger.exception(f"OCR 任务失败: {e}")
 
 
 def sleep_until_next_10min():
