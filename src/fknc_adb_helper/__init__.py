@@ -3,6 +3,7 @@ import os
 import time
 from datetime import datetime, timedelta
 
+import ddddocr
 import easyocr
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
@@ -11,13 +12,27 @@ from loguru import logger
 from fknc_adb_helper.adb_utils import fetch_screenshot
 from fknc_adb_helper.detect_item import item_exists
 
+DEBUG = True
+
+ITEM_BG_WIDTH = 165
+ITEM_PRICE_WIDTH = 50
+ITEM_HEIGHT = 40
+
 ADDITION_ITEMS = [
     "火盆",
     "造雪机",
     "引雷针",
     "造型喷雾",
     "农田置换卡",
+    "标准洒水器",
 ]
+if DEBUG:
+    ADDITION_ITEMS += [
+        "水壶",
+        "隐身喷雾",
+        "简易洒水器",
+        "月球简易洒水器",
+    ]
 
 TARGET_ITEM = [
     "流星杖",
@@ -29,9 +44,12 @@ TARGET_ITEM = [
 ]
 
 ALIAS_MAP = {
+    "月球简易洒水器": "月简",
     "月球标准洒水器": "月标",
     "月球白银洒水器": "月白",
     "月球黄金洒水器": "月金",
+    "简易洒水器": "地简",
+    "标准洒水器": "地标",
     "白银洒水器": "地白",
     "黄金洒水器": "地金",
 }
@@ -50,7 +68,19 @@ logger.add(
 )
 
 
-def init_reader() -> easyocr.Reader:
+def init_ddddocr() -> ddddocr.DdddOcr:
+    logger.info("加载 DDDDOcr 模型")
+    d = ddddocr.DdddOcr(
+        beta=True,
+        use_gpu=True,
+        show_ad=False,
+    )
+    d.set_ranges(0)
+    logger.info("DDDDOcr 模型加载完成")
+    return d
+
+
+def init_general_ocr() -> easyocr.Reader:
     logger.info("加载 OCR 模型")
     reader = easyocr.Reader(
         ["ch_sim"],
@@ -63,8 +93,9 @@ def init_reader() -> easyocr.Reader:
 def run_ocr(
     reader: easyocr.Reader,
     pic: bytes = None,
+    dddd: ddddocr.DdddOcr = None,
 ) -> list[str]:
-    found_items: list[str] = []
+    found_items: dict[str] = {}
 
     try:
         screen_shot = pic or fetch_screenshot()
@@ -102,22 +133,39 @@ def run_ocr(
                 font=font,
             )
 
+            top_left, _, bottom_right, _ = pts
+            left, top = top_left
+            right, bottom = bottom_right
+
             if text in TARGET_ITEM or text in ADDITION_ITEMS:
-                top_left, _, bottom_right, _ = pts
-                left, top = top_left
-                right, bottom = bottom_right
                 region = scrshot_img.crop((left, top, right, bottom))
                 if item_exists(region):
-                    found_items.append(text)
+                    num_bottom = top + 10
+                    num_top = num_bottom - ITEM_HEIGHT
+                    num_left = (left + right - ITEM_BG_WIDTH) // 2
+                    num_right = num_left + ITEM_PRICE_WIDTH
+
+                    num_region = scrshot_img.crop(
+                        (num_left, num_top, num_right, num_bottom)
+                    )
+
+                    try:
+                        result = int(dddd.classification(num_region))
+                    except Exception:
+                        result = 1
+                    found_items[text] = result
 
             confidence: np.float64
             kept += 1
 
         # must have one of valuable thing
-        if pic is not None or (
-            found_items and (set(found_items) - set(ADDITION_ITEMS))
-        ):
-            found_things = "，".join(map(lambda n: ALIAS_MAP.get(n, n), found_items))
+        if DEBUG or pic is not None or (set(found_items) - set(ADDITION_ITEMS)):
+
+            def proc_item(p):
+                k, v = p
+                return f"{ALIAS_MAP.get(k, k)}{v}"
+
+            found_things = "，".join(map(proc_item, found_items.items()))
             if found_things:
                 logger.info(f"发现物品: {found_things}")
             img.save(filename)
@@ -146,10 +194,11 @@ def sleep_until_next_10min():
 
 
 def main():
-    reader = init_reader()
+    reader = init_general_ocr()
+    num_reader = init_ddddocr()
 
     logger.info("程序启动，立即执行一次 OCR")
-    run_ocr(reader)
+    run_ocr(reader, dddd=num_reader)
 
     while True:
         sleep_until_next_10min()

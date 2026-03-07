@@ -1,8 +1,8 @@
-from src.fknc_adb_helper import run_ocr, init_reader, logger
+from src.fknc_adb_helper import run_ocr, init_general_ocr, logger
 
 
 def main():
-    reader = init_reader()
+    reader = init_general_ocr()
 
     logger.info("loading test image...")
     with open("test/moon_std.png", "rb") as f:
