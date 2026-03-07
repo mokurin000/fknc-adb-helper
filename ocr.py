@@ -20,6 +20,7 @@ TARGET_ITEM = [
     "白银洒水器",
     "黄金洒水器",
     "农田置换卡",
+    "造型喷雾",
 ]
 
 os.makedirs("pics", exist_ok=True)
@@ -37,13 +38,11 @@ logger.add(
 
 
 def fetch_screenshot() -> bytes:
-    logger.info("开始截图")
     out = subprocess.run(
         ["adb", "exec-out", "screencap", "-p"],
         stdout=subprocess.PIPE,
         check=True,
     ).stdout
-    logger.info("截图完成")
     return out
 
 
