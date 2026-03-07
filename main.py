@@ -1,5 +1,6 @@
-import subprocess
 import time
+import shutil
+import subprocess
 from datetime import datetime, timedelta
 
 import easyocr
@@ -47,6 +48,12 @@ def run_ocr(reader: easyocr.Reader):
         result = reader.readtext("screenshot.png")
         logger.info(f"OCR 完成，共识别 {len(result)} 个区域")
 
+        ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
+        filename = f"result_{ts}.png"
+        scr_filename = f"screenshot_{ts}.png"
+
+        shutil.copy2("screenshot.png", scr_filename)
+
         img = Image.open("screenshot.png")
         draw = ImageDraw.Draw(img)
 
@@ -70,9 +77,6 @@ def run_ocr(reader: easyocr.Reader):
 
             confidence: np.float64
             kept += 1
-
-        ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
-        filename = f"result_{ts}.png"
 
         img.save(filename)
 
