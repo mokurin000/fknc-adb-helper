@@ -172,6 +172,9 @@ def run_ocr(
             found_things = "，".join(map(proc_item, found_items.items()))
             if found_things:
                 logger.info(f"发现物品: {found_things}")
+                if not DEBUG and pic is None:
+                    # TODO: push to QQ group?
+                    pass
             img.save(filename)
 
             with open(scr_filename, "wb") as f:
