@@ -12,7 +12,7 @@ from loguru import logger
 from fknc_adb_helper.adb_utils import fetch_screenshot
 from fknc_adb_helper.detect_item import item_exists
 
-DEBUG = True
+DEBUG = False
 
 ITEM_BG_WIDTH = 165
 ITEM_PRICE_WIDTH = 50
@@ -94,7 +94,7 @@ def run_ocr(
     reader: easyocr.Reader,
     pic: bytes = None,
     dddd: ddddocr.DdddOcr = None,
-) -> list[str]:
+) -> dict[str, int]:
     found_items: dict[str] = {}
 
     try:
@@ -145,15 +145,18 @@ def run_ocr(
                     num_left = (left + right - ITEM_BG_WIDTH) // 2
                     num_right = num_left + ITEM_PRICE_WIDTH
 
-                    num_region = scrshot_img.crop(
-                        (num_left, num_top, num_right, num_bottom)
-                    )
+                    if dddd is not None:
+                        num_region = scrshot_img.crop(
+                            (num_left, num_top, num_right, num_bottom)
+                        )
 
-                    try:
-                        result = int(dddd.classification(num_region))
-                    except Exception:
-                        result = 1
-                    found_items[text] = result
+                        try:
+                            num_region.save(f"{text}-num.png")
+                            result = int(dddd.classification(num_region))
+                        except Exception as e:
+                            logger.error(f"{e}")
+                            result = 1
+                        found_items[text] = result
 
             confidence: np.float64
             kept += 1
@@ -202,7 +205,7 @@ def main():
 
     while True:
         sleep_until_next_10min()
-        run_ocr(reader)
+        run_ocr(reader, dddd=num_reader)
 
 
 if __name__ == "__main__":
