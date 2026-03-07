@@ -14,7 +14,10 @@ def main():
     with open("test/amount.png", "rb") as f:
         pic = f.read()
 
-    assert run_ocr(reader, pic, dddd=dddd)["造型喷雾"] == 2
+    result = run_ocr(reader, pic, dddd=dddd)
+    assert result["造型喷雾"] == 2
+    assert result["标准洒水器"] == 2
+    assert result["幽灵药水"] == 3
 
 
 if __name__ == "__main__":
