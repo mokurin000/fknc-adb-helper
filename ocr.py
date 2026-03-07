@@ -9,15 +9,17 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from loguru import logger
 
+from detect_item import item_exists
+
 TARGET_ITEM = [
     "造雪机",
     "流星杖",
-    "月球简易洒水器",
     "月球标准洒水器",
     "月球白银洒水器",
     "月球黄金洒水器",
     "白银洒水器",
     "黄金洒水器",
+    "农田置换卡",
 ]
 
 os.makedirs("pics", exist_ok=True)
@@ -64,9 +66,7 @@ def run_ocr(
         scrshot_img = Image.open(io.BytesIO(screen_shot))
         scrshot_img.save("screenshot.png")
 
-        logger.info("开始 OCR 识别")
         result = reader.readtext("screenshot.png")
-        logger.info(f"OCR 完成，共识别 {len(result)} 个区域")
 
         ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
         if pic is None:
@@ -104,14 +104,13 @@ def run_ocr(
                 left, top = top_left
                 right, bottom = bottom_right
                 region = scrshot_img.crop((left, top, right, bottom))
-                region.save(f"{text}.png")
+                if item_exists(region):
+                    logger.info(f"发现物品：{text}")
 
             confidence: np.float64
             kept += 1
 
         img.save(filename)
-
-        logger.info(f"结果保存: {filename} (置信度≥{CONFIDENCE} 的 {kept} 个)")
 
     except Exception as e:
         logger.exception(f"OCR 任务失败: {e}")
