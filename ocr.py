@@ -43,21 +43,24 @@ def init_reader() -> easyocr.Reader:
     return reader
 
 
-def run_ocr(reader: easyocr.Reader):
+def run_ocr(
+    reader: easyocr.Reader,
+    img_path: str = "screenshot.png",
+):
     try:
         fetch_screenshot()
 
         logger.info("开始 OCR 识别")
-        result = reader.readtext("screenshot.png")
+        result = reader.readtext(img_path)
         logger.info(f"OCR 完成，共识别 {len(result)} 个区域")
 
         ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
         filename = f"pics/result_{ts}.png"
         scr_filename = f"pics/screenshot_{ts}.png"
 
-        shutil.copy2("screenshot.png", scr_filename)
+        shutil.copy2(img_path, scr_filename)
 
-        img = Image.open("screenshot.png")
+        img = Image.open(img_path)
         draw = ImageDraw.Draw(img)
 
         kept = 0
@@ -103,11 +106,16 @@ def sleep_until_next_10min():
     time.sleep(wait)
 
 
-reader = init_reader()
+def main():
+    reader = init_reader()
 
-logger.info("程序启动，立即执行一次 OCR")
-run_ocr(reader)
-
-while True:
-    sleep_until_next_10min()
+    logger.info("程序启动，立即执行一次 OCR")
     run_ocr(reader)
+
+    while True:
+        sleep_until_next_10min()
+        run_ocr(reader)
+
+
+if __name__ == "__main__":
+    main()
