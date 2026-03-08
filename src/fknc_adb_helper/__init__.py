@@ -12,6 +12,8 @@ from loguru import logger
 from fknc_adb_helper.adb_utils import fetch_screenshot
 from fknc_adb_helper.detect_item import item_exists
 
+SAVE_SCREENSHOTS = False
+
 ITEM_BG_WIDTH = 165
 ITEM_PRICE_WIDTH = 50
 ITEM_HEIGHT = 40
@@ -176,10 +178,11 @@ def run_ocr(
                 if pic is None:
                     # TODO: push to QQ group?
                     pass
-            img.save(filename)
 
-            with open(scr_filename, "wb") as f:
-                f.write(screen_shot)
+            if SAVE_SCREENSHOTS:
+                img.save(filename)
+                with open(scr_filename, "wb") as f:
+                    f.write(screen_shot)
 
     except Exception as e:
         logger.exception(f"OCR 任务失败: {e}")
