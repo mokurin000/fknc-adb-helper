@@ -11,11 +11,12 @@ def init_client() -> MilkyClient:
     初始化 QQ 推送客户端
     """
 
+    url = os.environ.get("MILKY_API", "http://localhost:3010")
     token = os.environ.get("MILKY_TOKEN", None)
     timeout = float(os.environ.get("MILKY_TIMEOUT", 30))
 
     client = MilkyClient(
-        "http://localhost:3010",
+        url,
         access_token=token,
         timeout=timeout,
     )
