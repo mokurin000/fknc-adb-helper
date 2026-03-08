@@ -1,7 +1,6 @@
 import io
 import os
-import time
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import ddddocr
 import easyocr
@@ -9,7 +8,12 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from loguru import logger
 
-from fknc_adb_helper.adb_utils import fetch_screenshot
+from fknc_adb_helper.utils import (
+    fetch_screenshot,
+    init_ddddocr,
+    init_general_ocr,
+    sleep_until_next_10min,
+)
 from fknc_adb_helper.detect_item import item_exists
 
 SAVE_SCREENSHOTS = False
@@ -62,28 +66,6 @@ logger.add(
     retention="7 days",
     level="INFO",
 )
-
-
-def init_ddddocr() -> ddddocr.DdddOcr:
-    logger.info("加载 DDDDOcr 模型")
-    d = ddddocr.DdddOcr(
-        beta=True,
-        use_gpu=True,
-        show_ad=False,
-    )
-    d.set_ranges(0)
-    logger.info("DDDDOcr 模型加载完成")
-    return d
-
-
-def init_general_ocr() -> easyocr.Reader:
-    logger.info("加载 OCR 模型")
-    reader = easyocr.Reader(
-        ["ch_sim"],
-        gpu=True,
-    )
-    logger.info("OCR 模型加载完成")
-    return reader
 
 
 def run_ocr(
@@ -188,20 +170,6 @@ def run_ocr(
         logger.exception(f"OCR 任务失败: {e}")
 
     return found_items
-
-
-def sleep_until_next_10min():
-    now = datetime.now()
-    next_time = now.replace(second=0, microsecond=0) + timedelta(minutes=10)
-    next_time = next_time.replace(minute=(next_time.minute // 10) * 10, second=5)
-
-    if next_time <= now:
-        next_time += timedelta(minutes=10)
-
-    wait = (next_time - now).total_seconds()
-    logger.info(f"等待 {wait:.0f} 秒，下一次运行时间 {next_time.strftime('%H:%M:%S')}")
-
-    time.sleep(wait)
 
 
 def main():

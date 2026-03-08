@@ -1,8 +1,9 @@
-from src.fknc_adb_helper import (
+from loguru import logger
+
+from fknc_adb_helper import (
     run_ocr,
     init_general_ocr,
     init_ddddocr,
-    logger,
 )
 
 
