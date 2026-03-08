@@ -1,5 +1,6 @@
 import io
 import os
+import time
 from datetime import datetime
 
 import ddddocr
@@ -130,7 +131,6 @@ def run_ocr(
                         )
 
                         try:
-                            num_region.save(f"{text}-num.png")
                             result = int(dddd.classification(num_region))
                         except Exception as e:
                             logger.error(f"{e}")
@@ -176,8 +176,10 @@ def run_ocr(
 
 
 def main():
+    time1 = time.monotonic()
     reader = init_general_ocr()
     num_reader = init_ddddocr()
+    time2 = time.monotonic()
 
     def call_ocr():
         run_ocr(
@@ -185,7 +187,7 @@ def main():
             dddd=num_reader,
         )
 
-    logger.info("程序启动，立即执行一次 OCR")
+    logger.info(f"初始化完成，耗时{time2 - time1:.2f}s")
     while True:
         sleep_until_next_10min()
         call_ocr()
