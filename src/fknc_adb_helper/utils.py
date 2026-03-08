@@ -18,6 +18,7 @@ def fetch_screenshot() -> bytes:
 
     # hard-coded for 1920x1080
     for x, y in [
+        (960, 540),  # Cancel check crop
         (1804, 149),  # Close
         (1773, 89),  # Store
         (1805, 381),  # Tools
