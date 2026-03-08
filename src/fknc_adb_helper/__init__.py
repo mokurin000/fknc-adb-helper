@@ -179,7 +179,7 @@ def run_ocr(
                     # TODO: push to QQ group?
                     pass
 
-            if SAVE_SCREENSHOTS:
+            if SAVE_SCREENSHOTS or pic is not None:
                 img.save(filename)
                 with open(scr_filename, "wb") as f:
                     f.write(screen_shot)
