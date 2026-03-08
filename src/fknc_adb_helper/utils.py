@@ -8,6 +8,14 @@ from loguru import logger
 
 
 def fetch_screenshot() -> bytes:
+    """
+    从 adb 连接获取截图
+
+    @TODO 滑动支持
+    @TODO 作物识别支持
+    @TODO 更多分辨率支持
+    """
+
     # hard-coded for 1920x1080
     for x, y in [
         (1804, 149),  # Close
@@ -25,6 +33,9 @@ def fetch_screenshot() -> bytes:
 
 
 def sleep_until_next_10min():
+    """
+    等待至下个刷新时间
+    """
     now = datetime.now()
     next_time = now.replace(second=0, microsecond=0) + timedelta(minutes=10)
     next_time = next_time.replace(minute=(next_time.minute // 10) * 10, second=5)
