@@ -5,9 +5,10 @@ from datetime import datetime
 import ddddocr
 import easyocr
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
 from loguru import logger
+from PIL import Image, ImageDraw, ImageFont
 
+from fknc_adb_helper.bot import send_message
 from fknc_adb_helper.utils import (
     fetch_screenshot,
     init_ddddocr,
@@ -158,8 +159,10 @@ def run_ocr(
             if found_things:
                 logger.info(f"发现物品: {found_things}")
                 if pic is None:
-                    # TODO: push to QQ group?
-                    pass
+                    try:
+                        send_message(f"商店刷新：\n{found_things}")
+                    except Exception as e:
+                        logger.error(f"推送失败：{e}")
 
             if SAVE_SCREENSHOTS or pic is not None:
                 img.save(filename)
@@ -176,12 +179,17 @@ def main():
     reader = init_general_ocr()
     num_reader = init_ddddocr()
 
-    logger.info("程序启动，立即执行一次 OCR")
-    run_ocr(reader, dddd=num_reader)
+    def call_ocr():
+        run_ocr(
+            reader,
+            dddd=num_reader,
+        )
 
+    logger.info("程序启动，立即执行一次 OCR")
+    call_ocr()
     while True:
         sleep_until_next_10min()
-        run_ocr(reader, dddd=num_reader)
+        call_ocr()
 
 
 if __name__ == "__main__":

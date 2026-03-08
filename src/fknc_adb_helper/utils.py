@@ -26,7 +26,7 @@ def fetch_screenshot() -> bytes:
 
 def sleep_until_next_10min():
     now = datetime.now()
-    next_time = now.replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+    next_time = now.replace(second=0, microsecond=0) + timedelta(minutes=10)
     next_time = next_time.replace(minute=(next_time.minute // 10) * 10, second=5)
 
     if next_time <= now:

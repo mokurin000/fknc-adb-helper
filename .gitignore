@@ -13,3 +13,5 @@ wheels/
 /test-pics
 /*.png
 /*.log
+
+/.env
