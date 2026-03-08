@@ -186,7 +186,6 @@ def main():
         )
 
     logger.info("程序启动，立即执行一次 OCR")
-    call_ocr()
     while True:
         sleep_until_next_10min()
         call_ocr()
