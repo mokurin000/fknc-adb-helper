@@ -7,7 +7,9 @@ import ddddocr
 from loguru import logger
 
 
-def fetch_screenshot() -> bytes:
+def fetch_screenshot(
+    skip_sleep: bool = True,
+) -> bytes:
     """
     从 adb 连接获取截图
 
@@ -25,6 +27,10 @@ def fetch_screenshot() -> bytes:
     ]:
         subprocess.call(["adb", "shell", "input", "tap", f"{x}", f"{y}"])
         time.sleep(1)
+
+    if not skip_sleep:
+        sleep_until_current_min_5s()
+
     out = subprocess.run(
         ["adb", "exec-out", "screencap", "-p"],
         stdout=subprocess.PIPE,
@@ -33,13 +39,27 @@ def fetch_screenshot() -> bytes:
     return out
 
 
+def sleep_until_current_min_5s():
+    """
+    等待至下个刷新时间
+    """
+    now = datetime.now()
+    next_time = now.replace(second=5)
+    wait = (next_time - now).total_seconds()
+
+    if wait > 0:
+        logger.info(f"等待 {wait:.0f} 秒 后进行截图")
+
+        time.sleep(wait)
+
+
 def sleep_until_next_10min():
     """
     等待至下个刷新时间
     """
     now = datetime.now()
     next_time = now.replace(second=0, microsecond=0) + timedelta(minutes=10)
-    next_time = next_time.replace(minute=(next_time.minute // 10) * 10, second=5)
+    next_time = next_time.replace(minute=(next_time.minute // 10) * 10)
 
     if next_time <= now:
         next_time += timedelta(minutes=10)

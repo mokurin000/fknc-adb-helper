@@ -74,11 +74,12 @@ def run_ocr(
     reader: easyocr.Reader,
     pic: bytes = None,
     dddd: ddddocr.DdddOcr = None,
+    skip_sleep=True,
 ) -> dict[str, int]:
     found_items: dict[str] = {}
 
     try:
-        screen_shot = pic or fetch_screenshot()
+        screen_shot = pic or fetch_screenshot(skip_sleep=skip_sleep)
         scrshot_img = Image.open(io.BytesIO(screen_shot))
         scrshot_img.save("screenshot.png")
 
@@ -185,6 +186,7 @@ def main():
         run_ocr(
             reader,
             dddd=num_reader,
+            skip_sleep=False,
         )
 
     logger.info(f"初始化完成，耗时{time2 - time1:.2f}s")
