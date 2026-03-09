@@ -126,17 +126,19 @@ def run_ocr(
             left, top = top_left
             right, bottom = bottom_right
 
-            if (recognize_seeds and text.endswith("种子")) or (
-                text in [TARGET_ITEMS + ADDITION_ITEMS]
-            ):
+            if (
+                recognize_seeds
+                and text.endswith("种子")
+                and text.removesuffix("种子") in TARGET_SEEDS
+            ) or (text in [TARGET_ITEMS + ADDITION_ITEMS]):
                 region = scrshot_img.crop((left, top, right, bottom))
                 if item_exists(region):
-                    num_bottom = top + 10
-                    num_top = num_bottom - ITEM_HEIGHT
-                    num_left = (left + right - ITEM_BG_WIDTH) // 2
-                    num_right = num_left + ITEM_PRICE_WIDTH
-
                     if dddd is not None:
+                        num_bottom = top + 10
+                        num_top = num_bottom - ITEM_HEIGHT
+                        num_left = (left + right - ITEM_BG_WIDTH) // 2
+                        num_right = num_left + ITEM_PRICE_WIDTH
+
                         num_region = scrshot_img.crop(
                             (num_left, num_top, num_right, num_bottom)
                         )
@@ -163,25 +165,39 @@ def run_ocr(
     return found_items
 
 
+def alias_mapping(p):
+    k, v = p
+    return f"{ALIAS_MAP.get(k, k)}{v}"
+
+
 def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
     seeds, tools = fetch_screenshot(skip_sleep=False)
 
+    found_seeds = run_ocr(
+        reader,
+        screenshot=seeds,
+        dddd=None,
+        recognize_seeds=True,
+        min_confidence=0.08,
+    )
     found_tools = run_ocr(
         reader,
         screenshot=tools,
         dddd=num_reader,
     )
 
+    tools_string = ""
+    seeds_string = ""
+
+    if found_seeds:
+        seeds_string = "，".join(found_seeds.values())
+        logger.info(f"发现种子: {seeds_string}")
+
     # must have one of valuable thing
     if set(found_tools.values()) - set(ADDITION_ITEMS):
-
-        def proc_item(p):
-            k, v = p
-            return f"{ALIAS_MAP.get(k, k)}{v}"
-
         tools_string = "，".join(
             map(
-                proc_item,
+                alias_mapping,
                 sorted(
                     found_tools.items(),
                     key=lambda p: (TARGET_ITEMS + ADDITION_ITEMS).index(p[0]),
@@ -190,10 +206,16 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
         )
         if tools_string:
             logger.info(f"发现物品: {tools_string}")
-            try:
-                send_message(f"商店刷新：\n{tools_string}")
-            except Exception as e:
-                logger.error(f"推送失败：{e}")
+
+    if seeds_string or tools_string:
+        try:
+            send_message(
+                f"商店刷新：\n{seeds_string}\n{tools_string}".replace(
+                    "\n\n", "\n"
+                ).strip()
+            )
+        except Exception as e:
+            logger.error(f"推送失败：{e}")
 
 
 def main():
