@@ -92,6 +92,7 @@ def run_ocr(
     若 `dddd` 引擎未加载，则不记录其数量，设置为空元组。
     """
     found_items: dict[str] = {}
+    pic_type = "seed" if recognize_seeds else "item"
 
     try:
         scrshot_img = Image.open(io.BytesIO(screenshot))
@@ -100,8 +101,8 @@ def run_ocr(
         result = reader.readtext("screenshot.png")
 
         ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
-        filename = f"pics/{ts}-result.png"
-        scr_filename = f"pics/{ts}-screenshot.png"
+        filename = f"pics/{ts}-{pic_type}-result.png"
+        scr_filename = f"pics/{ts}-{pic_type}-screenshot.png"
 
         img = scrshot_img.copy()
         draw = ImageDraw.Draw(img)
@@ -130,7 +131,7 @@ def run_ocr(
                 recognize_seeds
                 and text.endswith("种子")
                 and text.removesuffix("种子") in TARGET_SEEDS
-            ) or (text in [TARGET_ITEMS + ADDITION_ITEMS]):
+            ) or (text in TARGET_ITEMS + ADDITION_ITEMS):
                 region = scrshot_img.crop((left, top, right, bottom))
                 if item_exists(region):
                     if dddd is not None:
@@ -226,11 +227,11 @@ def main():
 
     logger.info(f"初始化完成，耗时{time2 - time1:.2f}s")
     while True:
-        sleep_until_next_10min()
         call_ocr(
             reader=reader,
             num_reader=num_reader,
         )
+        sleep_until_next_10min()
 
 
 if __name__ == "__main__":
