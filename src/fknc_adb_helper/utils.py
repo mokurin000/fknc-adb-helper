@@ -29,7 +29,7 @@ def fetch_screenshot(
         time.sleep(1)
 
     if not skip_sleep:
-        sleep_until_current_min_5s()
+        sleep_until_current_min(second=5)
 
     out = subprocess.run(
         ["adb", "exec-out", "screencap", "-p"],
@@ -39,12 +39,12 @@ def fetch_screenshot(
     return out
 
 
-def sleep_until_current_min_5s():
+def sleep_until_current_min(second: int):
     """
     等待至下个刷新时间
     """
     now = datetime.now()
-    next_time = now.replace(second=5)
+    next_time = now.replace(second=second)
     wait = (next_time - now).total_seconds()
 
     if wait > 0:
