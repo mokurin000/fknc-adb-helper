@@ -35,12 +35,10 @@ TARGET_ITEMS = [
 
 ADDITION_ITEMS = [
     "农田置换卡",
-    "幽灵药水",
     "引雷针",
     "火盆",
     "造雪机",
     "唤醒机",
-    "造型喷雾",
     "标准洒水器",
 ]
 
@@ -72,31 +70,23 @@ logger.add(
 
 def run_ocr(
     reader: easyocr.Reader,
-    pic: bytes = None,
+    screenshot: bytes,
     dddd: ddddocr.DdddOcr = None,
-    skip_sleep=True,
 ) -> dict[str, int]:
     found_items: dict[str] = {}
 
     try:
-        screen_shot = pic or fetch_screenshot(skip_sleep=skip_sleep)
-        scrshot_img = Image.open(io.BytesIO(screen_shot))
+        scrshot_img = Image.open(io.BytesIO(screenshot))
         scrshot_img.save("screenshot.png")
 
         result = reader.readtext("screenshot.png")
 
         ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
-        if pic is None:
-            filename = f"pics/result_{ts}.png"
-            scr_filename = f"pics/screenshot_{ts}.png"
-        else:
-            filename = f"test-pics/result_{ts}.png"
-            scr_filename = f"test-pics/screenshot_{ts}.png"
+        filename = f"pics/{ts}-result.png"
+        scr_filename = f"pics/{ts}-screenshot.png"
 
         img = scrshot_img.copy()
         draw = ImageDraw.Draw(img)
-
-        kept = 0
 
         for coords, text, confidence in result:
             if confidence < CONFIDENCE:
@@ -139,41 +129,49 @@ def run_ocr(
                         found_items[text] = result
 
             confidence: np.float64
-            kept += 1
 
-        # must have one of valuable thing
-        if pic is not None or (set(found_items) - set(ADDITION_ITEMS)):
-
-            def proc_item(p):
-                k, v = p
-                return f"{ALIAS_MAP.get(k, k)}{v}"
-
-            found_things = "，".join(
-                map(
-                    proc_item,
-                    sorted(
-                        found_items.items(),
-                        key=lambda p: (TARGET_ITEMS + ADDITION_ITEMS).index(p[0]),
-                    ),
-                )
-            )
-            if found_things:
-                logger.info(f"发现物品: {found_things}")
-                if pic is None:
-                    try:
-                        send_message(f"商店刷新：\n{found_things}")
-                    except Exception as e:
-                        logger.error(f"推送失败：{e}")
-
-            if SAVE_SCREENSHOTS or pic is not None:
+            if SAVE_SCREENSHOTS:
                 img.save(filename)
                 with open(scr_filename, "wb") as f:
-                    f.write(screen_shot)
+                    f.write(screenshot)
 
     except Exception as e:
         logger.exception(f"OCR 任务失败: {e}")
 
     return found_items
+
+
+def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
+    seeds, tools = fetch_screenshot(skip_sleep=False)
+
+    found_tools = run_ocr(
+        reader,
+        screenshot=tools,
+        dddd=num_reader,
+    )
+
+    # must have one of valuable thing
+    if set(found_tools.values()) - set(ADDITION_ITEMS):
+
+        def proc_item(p):
+            k, v = p
+            return f"{ALIAS_MAP.get(k, k)}{v}"
+
+        tools_string = "，".join(
+            map(
+                proc_item,
+                sorted(
+                    found_tools.items(),
+                    key=lambda p: (TARGET_ITEMS + ADDITION_ITEMS).index(p[0]),
+                ),
+            )
+        )
+        if tools_string:
+            logger.info(f"发现物品: {tools_string}")
+            try:
+                send_message(f"商店刷新：\n{tools_string}")
+            except Exception as e:
+                logger.error(f"推送失败：{e}")
 
 
 def main():
@@ -182,17 +180,13 @@ def main():
     num_reader = init_ddddocr()
     time2 = time.monotonic()
 
-    def call_ocr():
-        run_ocr(
-            reader,
-            dddd=num_reader,
-            skip_sleep=False,
-        )
-
     logger.info(f"初始化完成，耗时{time2 - time1:.2f}s")
     while True:
         sleep_until_next_10min()
-        call_ocr()
+        call_ocr(
+            reader=reader,
+            num_reader=num_reader,
+        )
 
 
 if __name__ == "__main__":

@@ -7,15 +7,35 @@ import ddddocr
 from loguru import logger
 
 
+def take_screenshot() -> bytes:
+    """
+    获取当前屏幕截图，返回PNG字节
+    """
+    return subprocess.run(
+        ["adb", "exec-out", "screencap", "-p"],
+        stdout=subprocess.PIPE,
+        check=True,
+    ).stdout
+
+
+def tap_screen(x: int, y: int):
+    """
+    模拟触控点击坐标 x, y
+    """
+    subprocess.call(["adb", "shell", "input", "tap", f"{x}", f"{y}"])
+
+
+# TODO 滑动支持
+# TODO 更多分辨率支持
 def fetch_screenshot(
     skip_sleep: bool = True,
-) -> bytes:
+) -> tuple[bytes, bytes]:
     """
     从 adb 连接获取截图
 
-    @TODO 滑动支持
-    @TODO 作物识别支持
-    @TODO 更多分辨率支持
+    :param: skip_sleep 跳过等待至下个整分钟 05 秒。
+
+    :return: 种子截图，工具截图
     """
 
     # hard-coded for 1920x1080
@@ -23,20 +43,19 @@ def fetch_screenshot(
         (960, 540),  # Cancel check crop
         (1804, 149),  # Close
         (1773, 89),  # Store
-        (1805, 381),  # Tools
     ]:
-        subprocess.call(["adb", "shell", "input", "tap", f"{x}", f"{y}"])
+        tap_screen(x, y)
         time.sleep(1)
 
     if not skip_sleep:
         sleep_until_current_min(second=5)
 
-    out = subprocess.run(
-        ["adb", "exec-out", "screencap", "-p"],
-        stdout=subprocess.PIPE,
-        check=True,
-    ).stdout
-    return out
+    seeds = take_screenshot()
+
+    tap_screen(1805, 381)  # Tools
+    time.sleep(1)
+    tools = take_screenshot()
+    return seeds, tools
 
 
 def sleep_until_current_min(second: int):
