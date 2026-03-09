@@ -24,6 +24,18 @@ ITEM_BG_WIDTH = 165
 ITEM_PRICE_WIDTH = 50
 ITEM_HEIGHT = 40
 
+TARGET_SEEDS = [
+    "草莓",
+    "松树",
+    "向日葵",
+    "大王菊",
+    "蟠桃",
+    "月核树",
+    "液光藤",
+    "月影梅",
+    "幻月花",
+]
+
 TARGET_ITEMS = [
     "月球黄金洒水器",
     "黄金洒水器",
@@ -57,7 +69,6 @@ ALIAS_MAP = {
 os.makedirs("pics", exist_ok=True)
 os.makedirs("test-pics", exist_ok=True)
 
-CONFIDENCE = 0.7
 font = ImageFont.truetype("msyh.ttc", 20)  # 微软雅黑
 
 logger.add(
@@ -72,7 +83,14 @@ def run_ocr(
     reader: easyocr.Reader,
     screenshot: bytes,
     dddd: ddddocr.DdddOcr = None,
-) -> dict[str, int]:
+    recognize_seeds: bool = False,
+    min_confidence: float = 0.7,
+) -> dict[str, int | tuple[()]]:
+    """
+    调用OCR引擎，提取有效物品及其数量
+
+    若 `dddd` 引擎未加载，则不记录其数量，设置为空元组。
+    """
     found_items: dict[str] = {}
 
     try:
@@ -89,9 +107,6 @@ def run_ocr(
         draw = ImageDraw.Draw(img)
 
         for coords, text, confidence in result:
-            if confidence < CONFIDENCE:
-                continue
-
             pts = [(int(x), int(y)) for x, y in coords]
 
             draw.polygon(pts, outline="red", width=3)
@@ -104,11 +119,16 @@ def run_ocr(
                 font=font,
             )
 
+            if confidence < min_confidence:
+                continue
+
             top_left, _, bottom_right, _ = pts
             left, top = top_left
             right, bottom = bottom_right
 
-            if text in TARGET_ITEMS or text in ADDITION_ITEMS:
+            if (recognize_seeds and text.endswith("种子")) or (
+                text in [TARGET_ITEMS + ADDITION_ITEMS]
+            ):
                 region = scrshot_img.crop((left, top, right, bottom))
                 if item_exists(region):
                     num_bottom = top + 10
@@ -127,13 +147,15 @@ def run_ocr(
                             logger.error(f"{e}")
                             result = 1
                         found_items[text] = result
+                    else:
+                        found_items[text] = ()
 
             confidence: np.float64
 
-            if SAVE_SCREENSHOTS:
-                img.save(filename)
-                with open(scr_filename, "wb") as f:
-                    f.write(screenshot)
+        if SAVE_SCREENSHOTS:
+            img.save(filename)
+            with open(scr_filename, "wb") as f:
+                f.write(screenshot)
 
     except Exception as e:
         logger.exception(f"OCR 任务失败: {e}")

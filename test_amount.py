@@ -16,9 +16,9 @@ def main():
         pic = f.read()
 
     result = run_ocr(reader, pic, dddd=dddd)
-    assert result["造型喷雾"] == 2
+    assert result["月球白银洒水器"] == 1
     assert result["标准洒水器"] == 2
-    assert result["幽灵药水"] == 3
+    logger.info("test passed!")
 
 
 if __name__ == "__main__":

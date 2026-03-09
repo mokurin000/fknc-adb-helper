@@ -11,6 +11,7 @@ def main():
         pic = f.read()
 
     assert "月球标准洒水器" in run_ocr(reader, pic)
+    logger.info("test passed!")
 
 
 if __name__ == "__main__":
