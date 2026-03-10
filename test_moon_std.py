@@ -10,7 +10,7 @@ def main():
     with open("test/moon_std.png", "rb") as f:
         pic = f.read()
 
-    assert "月球标准洒水器" in run_ocr(reader, pic)
+    assert "月球标准洒水器" in run_ocr(reader, pic).keys()
     logger.info("test passed!")
 
 

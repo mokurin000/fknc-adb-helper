@@ -191,11 +191,10 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
     seeds_string = ""
 
     if found_seeds:
-        seeds_string = "，".join(found_seeds.values())
-        logger.info(f"发现种子: {seeds_string}")
+        seeds_string = "，".join(found_seeds.keys())
 
     # must have one of valuable thing
-    if set(found_tools.values()) - set(ADDITION_ITEMS):
+    if set(found_tools.keys()) & set(TARGET_ITEMS):
         tools_string = "，".join(
             map(
                 alias_mapping,
@@ -205,16 +204,15 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
                 ),
             )
         )
-        if tools_string:
-            logger.info(f"发现物品: {tools_string}")
+
+    logger.info(f"识别结果：{list(found_seeds.keys())} | {list(found_tools.keys())}")
 
     if seeds_string or tools_string:
+        msg = f"商店刷新：\n{seeds_string}\n{tools_string}".replace(
+            "\n\n", "\n"
+        ).strip()
         try:
-            send_message(
-                f"商店刷新：\n{seeds_string}\n{tools_string}".replace(
-                    "\n\n", "\n"
-                ).strip()
-            )
+            send_message(msg)
         except Exception as e:
             logger.error(f"推送失败：{e}")
 
