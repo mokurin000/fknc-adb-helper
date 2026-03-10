@@ -21,6 +21,7 @@ from fknc_adb_helper.utils import (
 from fknc_adb_helper.detect_item import item_exists
 
 SAVE_SCREENSHOTS = False
+SAVE_RESULT = True
 
 ITEM_BG_WIDTH = 165
 ITEM_PRICE_WIDTH = 50
@@ -149,8 +150,9 @@ def run_ocr(
 
             confidence: np.float64
 
-        if SAVE_SCREENSHOTS:
+        if SAVE_RESULT:
             img.save(filename)
+        if SAVE_SCREENSHOTS:
             with open(scr_filename, "wb") as f:
                 f.write(screenshot)
 
