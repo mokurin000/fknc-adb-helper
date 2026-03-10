@@ -1,8 +1,9 @@
-from enum import Enum
 import io
 import os
-from subprocess import CalledProcessError
+import sys
 import time
+from enum import Enum
+from subprocess import CalledProcessError
 from datetime import datetime
 
 import ddddocr
@@ -21,8 +22,10 @@ from fknc_adb_helper.utils import (
 )
 from fknc_adb_helper.detect_item import item_exists
 
+# left, top, right, bottom (pixel)
 # for 1920x1080
-STORE_LEFT_TOP_RIGHT_BOTTOM = (1149, 345, 1149 + 593, 345 + 688)
+STORE_RECT = (1149, 345, 1149 + 593, 345 + 688)
+WEATHER_RECT = (468, 103, 1084, 177)
 
 SAVE_SCREENSHOTS = False
 SAVE_RESULT = True
@@ -113,7 +116,7 @@ def run_ocr(
 
     try:
         scrshot_img = Image.open(io.BytesIO(screenshot))
-        scrshot_img = scrshot_img.crop(crop_rect or STORE_LEFT_TOP_RIGHT_BOTTOM)
+        scrshot_img = scrshot_img.crop(crop_rect or STORE_RECT)
         result = common_ocr(
             reader=reader,
             pic=scrshot_img,
@@ -261,6 +264,10 @@ def main():
     time2 = time.monotonic()
 
     logger.info(f"初始化完成，耗时{time2 - time1:.2f}s")
+
+    if "--skip-first-sleep" not in sys.argv:
+        sleep_until_next_10min()
+
     while True:
         call_ocr(
             reader=reader,
