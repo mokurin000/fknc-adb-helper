@@ -5,6 +5,29 @@ from datetime import datetime, timedelta
 import easyocr
 import ddddocr
 from loguru import logger
+from PIL import Image
+
+
+def common_ocr(
+    reader: easyocr.Reader,
+    pic: bytes | Image.Image,
+) -> list[
+    tuple[
+        list[tuple[int, int]],
+        str,
+        float,
+    ]
+]:
+    if isinstance(pic, Image.Image):
+        pic.save("temp.png")
+    elif isinstance(pic, bytes):
+        with open("temp.png", "wb") as f:
+            f.write(pic)
+    else:
+        raise TypeError()
+
+    result = reader.readtext("temp.png")
+    return result
 
 
 def is_eggy_party() -> bool:

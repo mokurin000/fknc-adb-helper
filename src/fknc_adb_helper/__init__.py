@@ -12,6 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from fknc_adb_helper.bot import send_message
 from fknc_adb_helper.utils import (
+    common_ocr,
     fetch_screenshot,
     init_ddddocr,
     init_general_ocr,
@@ -19,6 +20,9 @@ from fknc_adb_helper.utils import (
     sleep_until_next_10min,
 )
 from fknc_adb_helper.detect_item import item_exists
+
+# for 1920x1080
+STORE_LEFT_TOP_RIGHT_BOTTOM = (1149, 345, 1149 + 593, 345 + 688)
 
 SAVE_SCREENSHOTS = False
 SAVE_RESULT = True
@@ -91,9 +95,14 @@ def run_ocr(
 
     try:
         scrshot_img = Image.open(io.BytesIO(screenshot))
-        scrshot_img.save("screenshot.png")
-
-        result = reader.readtext("screenshot.png")
+        scrshot_img = scrshot_img.crop(STORE_LEFT_TOP_RIGHT_BOTTOM)
+        result: list[
+            tuple[
+                list[tuple[int, int]],
+                str,
+                np.float64,
+            ]
+        ] = common_ocr(scrshot_img)
 
         ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
         filename = f"pics/{ts}-{pic_type}-result.png"
@@ -148,13 +157,10 @@ def run_ocr(
                     else:
                         found_items[text] = ()
 
-            confidence: np.float64
-
         if SAVE_RESULT:
             img.save(filename)
         if SAVE_SCREENSHOTS:
-            with open(scr_filename, "wb") as f:
-                f.write(screenshot)
+            scrshot_img.save(scr_filename)
 
     except Exception as e:
         logger.exception(f"OCR 任务失败: {e}")
