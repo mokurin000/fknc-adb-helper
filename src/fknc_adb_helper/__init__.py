@@ -191,7 +191,9 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
     seeds_string = ""
 
     if found_seeds:
-        seeds_string = "，".join(found_seeds.keys())
+        seeds_string = "，".join(
+            map(lambda s: str.removesuffix(s, "种子"), found_seeds.keys())
+        )
 
     # must have one of valuable thing
     if set(found_tools.keys()) & set(TARGET_ITEMS):
