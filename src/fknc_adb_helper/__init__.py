@@ -205,7 +205,7 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
             )
         )
 
-    logger.info(f"识别结果：{list(found_seeds.keys())} | {list(found_tools.keys())}")
+    logger.info(f"识别结果：{list(found_seeds.items())} | {list(found_tools.items())}")
 
     if seeds_string or tools_string:
         msg = f"商店刷新：\n{seeds_string}\n{tools_string}".replace(
