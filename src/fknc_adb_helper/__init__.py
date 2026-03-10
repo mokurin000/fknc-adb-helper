@@ -131,7 +131,7 @@ def run_ocr(
                 recognize_seeds
                 and text.endswith("种子")
                 and text.removesuffix("种子") in TARGET_SEEDS
-            ) or (text in TARGET_ITEMS + ADDITION_ITEMS):
+            ) or (not recognize_seeds and text in TARGET_ITEMS + ADDITION_ITEMS):
                 region = scrshot_img.crop((left, top, right, bottom))
                 if item_exists(region):
                     if dddd is not None:
