@@ -7,6 +7,19 @@ import ddddocr
 from loguru import logger
 
 
+def is_eggy_party() -> bool:
+    return (
+        subprocess.call(
+            [
+                "adb",
+                "shell",
+                "dumpsys activity | grep -E 'mCurrentFocus' | grep 'com.netease.party/com.netease.party.Client'",
+            ]
+        )
+        == 0
+    )
+
+
 def take_screenshot() -> bytes:
     """
     获取当前屏幕截图，返回PNG字节

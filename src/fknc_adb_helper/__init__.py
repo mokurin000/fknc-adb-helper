@@ -1,5 +1,6 @@
 import io
 import os
+from subprocess import CalledProcessError
 import time
 from datetime import datetime
 
@@ -14,6 +15,7 @@ from fknc_adb_helper.utils import (
     fetch_screenshot,
     init_ddddocr,
     init_general_ocr,
+    is_eggy_party,
     sleep_until_next_10min,
 )
 from fknc_adb_helper.detect_item import item_exists
@@ -171,7 +173,15 @@ def alias_mapping(p):
 
 
 def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
-    seeds, tools = fetch_screenshot(skip_sleep=False)
+    try:
+        assert is_eggy_party()
+        seeds, tools = fetch_screenshot(skip_sleep=False)
+    except AssertionError:
+        logger.error("当前活动非蛋仔派对，跳过处理！")
+        return
+    except CalledProcessError | Exception as e:
+        logger.error(f"截图失败：{e}")
+        return
 
     found_seeds = run_ocr(
         reader,
