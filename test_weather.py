@@ -17,6 +17,7 @@ def main():
         reader,
         screenshot=pic,
         min_confidence=0.5,
+        crop_rect=(468, 103, 1084, 177),
     )
 
 

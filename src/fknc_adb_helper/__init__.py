@@ -83,18 +83,21 @@ def run_ocr(
     dddd: ddddocr.DdddOcr = None,
     recognize_seeds: bool = False,
     min_confidence: float = 0.7,
+    crop_rect: tuple[int, int, int, int] = None,
 ) -> dict[str, int | tuple[()]]:
     """
     调用OCR引擎，提取有效物品及其数量
 
     若 `dddd` 引擎未加载，则不记录其数量，设置为空元组。
+
+    :param: crop_rect left, top, right, bottom 绝对像素坐标
     """
     found_items: dict[str] = {}
     pic_type = "seed" if recognize_seeds else "item"
 
     try:
         scrshot_img = Image.open(io.BytesIO(screenshot))
-        scrshot_img = scrshot_img.crop(STORE_LEFT_TOP_RIGHT_BOTTOM)
+        scrshot_img = scrshot_img.crop(crop_rect or STORE_LEFT_TOP_RIGHT_BOTTOM)
         result = common_ocr(
             reader=reader,
             pic=scrshot_img,
