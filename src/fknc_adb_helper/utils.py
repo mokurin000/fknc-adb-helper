@@ -65,7 +65,7 @@ def tap_screen(x: int, y: int):
 
 # TODO 滑动支持
 # TODO 更多分辨率支持
-def fetch_screenshot() -> tuple[bytes, bytes]:
+def fetch_screenshot() -> tuple[bytes, bytes, bytes]:
     """
     从 adb 连接获取截图
 

@@ -55,6 +55,16 @@ TARGET_ITEMS = [
     "月球标准洒水器",
 ]
 
+TARGET_WEATHER = {
+    "迷雾",
+    "荧光",
+    "彩虹",
+    "日蚀",
+    "流星雨",
+    "陨石雨",
+    "太阳耀斑",
+}
+
 ADDITION_ITEMS = [
     "农田置换卡",
     "引雷针",
@@ -217,8 +227,25 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
         dddd=num_reader,
     )
 
+    weather_string = ""
     tools_string = ""
     seeds_string = ""
+
+    # TODO: setup timer for weather OCR
+    weather = None
+    if weather is not None:
+        found_weather = run_ocr(
+            reader,
+            screenshot=None,
+            min_confidence=0.5,
+            crop_rect=WEATHER_RECT,
+            recognize_type=RecognizeType.WEATHER,
+        )
+        if found_weather:
+            for weather_text in found_weather:
+                if weather_text in TARGET_WEATHER:
+                    weather_string = weather_text
+                    break
 
     if found_seeds:
         seeds_string = "，".join(
@@ -239,10 +266,20 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
 
     logger.info(f"识别结果：{list(found_seeds.items())} | {list(found_tools.items())}")
 
+    msg = ""
+
     if seeds_string or tools_string:
-        msg = f"商店刷新：\n{seeds_string}\n{tools_string}".replace(
-            "\n\n", "\n"
-        ).strip()
+        msg = "\n".join(
+            filter(
+                str.__len__,
+                f"商店刷新：\n{seeds_string}\n{tools_string}".split("\n"),
+            )
+        )
+
+    if weather_string:
+        msg = f"天气：{weather_string}\n{msg}".strip()
+
+    if msg:
         try:
             send_message(msg)
         except Exception as e:
