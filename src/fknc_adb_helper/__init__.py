@@ -72,13 +72,6 @@ os.makedirs("test-pics", exist_ok=True)
 
 font = ImageFont.truetype("msyh.ttc", 20)  # 微软雅黑
 
-logger.add(
-    "ocr.log",
-    rotation="10 MB",
-    retention="7 days",
-    level="INFO",
-)
-
 
 def run_ocr(
     reader: easyocr.Reader,
@@ -229,6 +222,14 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
 
 
 def main():
+    logger.add(
+        "ocr.log",
+        rotation="10 MB",
+        retention="7 days",
+        level="INFO",
+        enqueue=True,
+    )
+
     time1 = time.monotonic()
     reader = init_general_ocr()
     num_reader = init_ddddocr()
