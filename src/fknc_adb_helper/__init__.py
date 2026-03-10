@@ -258,7 +258,7 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
         msg = "\n".join(
             filter(
                 str.__len__,
-                f"商店刷新：\n{seeds_string}\n{tools_string}".split("\n"),
+                f"{seeds_string}\n{tools_string}".split("\n"),
             )
         )
 
@@ -284,7 +284,7 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
                 break
 
     if weather_string:
-        msg = f"天气：{weather_string}".strip()
+        msg = weather_string.strip()
         try:
             send_message(msg)
         except Exception as e:
