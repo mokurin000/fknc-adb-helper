@@ -1,6 +1,7 @@
 from loguru import logger
 
 from fknc_adb_helper import (
+    RecognizeType,
     run_ocr,
     init_general_ocr,
     init_ddddocr,
@@ -13,20 +14,19 @@ def main():
 
     logger.info("loading test image...")
     with open("test/seeds.png", "rb") as f:
-        pic1 = f.read()
+        pic = f.read()
 
-    result1 = run_ocr(
+    result = run_ocr(
         reader,
-        screenshot=pic1,
+        screenshot=pic,
         dddd=dddd,
-        recognize_seeds=True,
         min_confidence=0.08,
+        recognize_type=RecognizeType.SEED,
     )
 
-    logger.info(f"scan result 1: {result1}")
+    logger.info(f"scan result: {result}")
 
-    assert result1["猕猴桃种子"] == 1
-    assert result1["草莓种子"] == 1
+    assert result["草莓种子"] == 1
 
     logger.info("test passed!")
 

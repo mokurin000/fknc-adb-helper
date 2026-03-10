@@ -1,6 +1,6 @@
 from loguru import logger
 
-from fknc_adb_helper import run_ocr, init_general_ocr
+from fknc_adb_helper import RecognizeType, run_ocr, init_general_ocr
 
 
 def main():
@@ -10,7 +10,14 @@ def main():
     with open("test/moon_std.png", "rb") as f:
         pic = f.read()
 
-    assert "月球标准洒水器" in run_ocr(reader, pic).keys()
+    assert (
+        "月球标准洒水器"
+        in run_ocr(
+            reader,
+            pic,
+            recognize_type=RecognizeType.ITEM,
+        ).keys()
+    )
     logger.info("test passed!")
 
 

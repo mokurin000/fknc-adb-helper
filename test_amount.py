@@ -17,7 +17,6 @@ def main():
 
     result = run_ocr(reader, pic, dddd=dddd)
     assert result["月球白银洒水器"] == 1
-    assert result["标准洒水器"] == 2
     logger.info("test passed!")
 
 

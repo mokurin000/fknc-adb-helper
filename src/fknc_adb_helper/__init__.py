@@ -1,3 +1,4 @@
+from enum import Enum
 import io
 import os
 from subprocess import CalledProcessError
@@ -77,11 +78,27 @@ os.makedirs("test-pics", exist_ok=True)
 font = ImageFont.truetype("msyh.ttc", 20)  # 微软雅黑
 
 
+class RecognizeType(Enum):
+    ITEM = "item"
+    SEED = "seed"
+    WEATHER = "weather"
+
+
+def validate_text(text: str, rec_type: RecognizeType) -> bool:
+    match rec_type:
+        case RecognizeType.ITEM:
+            return text in TARGET_ITEMS + ADDITION_ITEMS
+        case RecognizeType.SEED:
+            return text.endswith("种子") and text.removesuffix("种子") in TARGET_SEEDS
+        case RecognizeType.WEATHER:
+            return True
+
+
 def run_ocr(
     reader: easyocr.Reader,
     screenshot: bytes,
     dddd: ddddocr.DdddOcr = None,
-    recognize_seeds: bool = False,
+    recognize_type: RecognizeType = RecognizeType.ITEM,
     min_confidence: float = 0.7,
     crop_rect: tuple[int, int, int, int] = None,
 ) -> dict[str, int | tuple[()]]:
@@ -93,7 +110,6 @@ def run_ocr(
     :param: crop_rect left, top, right, bottom 绝对像素坐标
     """
     found_items: dict[str] = {}
-    pic_type = "seed" if recognize_seeds else "item"
 
     try:
         scrshot_img = Image.open(io.BytesIO(screenshot))
@@ -104,8 +120,8 @@ def run_ocr(
         )
 
         ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
-        filename = f"pics/{ts}-{pic_type}-result.png"
-        scr_filename = f"pics/{ts}-{pic_type}-screenshot.png"
+        filename = f"pics/{ts}-{recognize_type.value}-result.png"
+        scr_filename = f"pics/{ts}-{recognize_type.value}-screenshot.png"
 
         img = scrshot_img.copy()
         draw = ImageDraw.Draw(img)
@@ -130,13 +146,15 @@ def run_ocr(
             left, top = top_left
             right, bottom = bottom_right
 
-            if (
-                recognize_seeds
-                and text.endswith("种子")
-                and text.removesuffix("种子") in TARGET_SEEDS
-            ) or (not recognize_seeds and text in TARGET_ITEMS + ADDITION_ITEMS):
+            text = text.replace("孑", "子").replace("士", "土")
+            if validate_text(
+                text=text,
+                rec_type=recognize_type,
+            ):
                 region = scrshot_img.crop((left, top, right, bottom))
-                if item_exists(region):
+                if recognize_type == RecognizeType.WEATHER:
+                    found_items[text] = ()
+                elif item_exists(region):
                     if dddd is not None:
                         num_bottom = top + 10
                         num_top = num_bottom - ITEM_HEIGHT
