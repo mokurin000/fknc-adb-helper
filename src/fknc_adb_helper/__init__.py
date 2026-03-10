@@ -205,7 +205,7 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
         reader,
         screenshot=seeds,
         dddd=None,
-        recognize_seeds=True,
+        recognize_type=RecognizeType.SEED,
         min_confidence=0.08,
     )
     found_tools = run_ocr(
@@ -262,11 +262,11 @@ def main():
 
     logger.info(f"初始化完成，耗时{time2 - time1:.2f}s")
     while True:
-        sleep_until_next_10min()
         call_ocr(
             reader=reader,
             num_reader=num_reader,
         )
+        sleep_until_next_10min()
 
 
 if __name__ == "__main__":

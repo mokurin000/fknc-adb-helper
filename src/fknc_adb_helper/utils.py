@@ -39,7 +39,7 @@ def is_eggy_party() -> bool:
                 "shell",
                 "dumpsys activity | grep -E 'mCurrentFocus' | grep 'com.netease.party/com.netease.party.Client'",
             ],
-            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
         )
         == 0
     )
