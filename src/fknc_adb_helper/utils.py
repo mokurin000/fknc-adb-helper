@@ -69,14 +69,12 @@ def fetch_weather() -> bytes:
     """
 
     # hard-coded for 1920x1080
-    for x, y in [
-        (1804, 149),  # Close
-        (663, 46),  # Click weather
-    ]:
-        tap_screen(x, y)
-        time.sleep(1)
+    tap_screen(1804, 149)  # Close
+    time.sleep(1)
 
     sleep_until_current_min(second=25)
+    tap_screen(663, 46)  # Weather info
+    time.sleep(1)
     return take_screenshot()
 
 
