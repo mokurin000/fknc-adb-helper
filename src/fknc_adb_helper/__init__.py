@@ -227,11 +227,11 @@ def main():
 
     logger.info(f"初始化完成，耗时{time2 - time1:.2f}s")
     while True:
+        sleep_until_next_10min()
         call_ocr(
             reader=reader,
             num_reader=num_reader,
         )
-        sleep_until_next_10min()
 
 
 if __name__ == "__main__":
