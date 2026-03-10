@@ -170,7 +170,7 @@ def alias_mapping(p):
 def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
     try:
         assert is_eggy_party()
-        seeds, tools = fetch_screenshot(skip_sleep=False)
+        seeds, tools = fetch_screenshot()
     except AssertionError:
         logger.error("当前活动非蛋仔派对，跳过处理！")
         return

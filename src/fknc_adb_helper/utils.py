@@ -40,9 +40,7 @@ def tap_screen(x: int, y: int):
 
 # TODO 滑动支持
 # TODO 更多分辨率支持
-def fetch_screenshot(
-    skip_sleep: bool = True,
-) -> tuple[bytes, bytes]:
+def fetch_screenshot() -> tuple[bytes, bytes]:
     """
     从 adb 连接获取截图
 
@@ -55,13 +53,12 @@ def fetch_screenshot(
     for x, y in [
         (960, 540),  # Cancel check crop
         (1804, 149),  # Close
-        (1773, 89),  # Store
     ]:
         tap_screen(x, y)
         time.sleep(1)
 
-    if not skip_sleep:
-        sleep_until_current_min(second=5)
+    tap_screen(1773, 89)  # Store
+    sleep_until_current_min(second=5)
 
     seeds = take_screenshot()
 
