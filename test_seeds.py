@@ -1,13 +1,10 @@
 from loguru import logger
 
-import fknc_adb_helper
 from fknc_adb_helper import (
     run_ocr,
     init_general_ocr,
     init_ddddocr,
 )
-
-fknc_adb_helper.SAVE_SCREENSHOTS = True
 
 
 def main():
