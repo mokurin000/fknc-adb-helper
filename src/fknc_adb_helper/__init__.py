@@ -6,7 +6,6 @@ from datetime import datetime
 
 import ddddocr
 import easyocr
-import numpy as np
 from loguru import logger
 from PIL import Image, ImageDraw, ImageFont
 
@@ -96,13 +95,10 @@ def run_ocr(
     try:
         scrshot_img = Image.open(io.BytesIO(screenshot))
         scrshot_img = scrshot_img.crop(STORE_LEFT_TOP_RIGHT_BOTTOM)
-        result: list[
-            tuple[
-                list[tuple[int, int]],
-                str,
-                np.float64,
-            ]
-        ] = common_ocr(scrshot_img)
+        result = common_ocr(
+            reader=reader,
+            pic=scrshot_img,
+        )
 
         ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
         filename = f"pics/{ts}-{pic_type}-result.png"

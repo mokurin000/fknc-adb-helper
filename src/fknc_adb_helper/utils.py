@@ -6,6 +6,7 @@ import easyocr
 import ddddocr
 from loguru import logger
 from PIL import Image
+import numpy as np
 
 
 def common_ocr(
@@ -15,7 +16,7 @@ def common_ocr(
     tuple[
         list[tuple[int, int]],
         str,
-        float,
+        np.float64,
     ]
 ]:
     if isinstance(pic, Image.Image):
