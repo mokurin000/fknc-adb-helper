@@ -63,6 +63,23 @@ def tap_screen(x: int, y: int):
     subprocess.call(["adb", "shell", "input", "tap", f"{x}", f"{y}"])
 
 
+def fetch_weather() -> bytes:
+    """
+    当前状态必须为仓库/商店/未查看作物。
+    """
+
+    # hard-coded for 1920x1080
+    for x, y in [
+        (1804, 149),  # Close
+        (663, 46),  # Click weather
+    ]:
+        tap_screen(x, y)
+        time.sleep(1)
+
+    sleep_until_current_min(second=25)
+    return take_screenshot()
+
+
 # TODO 滑动支持
 # TODO 更多分辨率支持
 def fetch_screenshot() -> tuple[bytes, bytes, bytes]:
