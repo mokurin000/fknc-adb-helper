@@ -2,6 +2,10 @@
 
 基于 adb 实现的疯狂农场道具刷新检测&推送。
 
+## 环境支持
+
+考虑到模拟器生态支持情况，暂无非 Windows 平台的支持计划。
+
 ## 部署
 
 1. 配置任意一款支持 Milky 协议的 [bot 服务端](https://milky.ntqqrev.org/awesome#%E5%8D%8F%E8%AE%AE%E5%AE%9E%E7%8E%B0)
