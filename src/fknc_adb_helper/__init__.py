@@ -57,7 +57,7 @@ TARGET_ITEMS = [
 ]
 
 TARGET_WEATHER = {
-    "迷雾",
+    "雾",
     "荧光",
     "彩虹",
     "霓虹",
