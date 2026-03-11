@@ -4,9 +4,10 @@ from datetime import datetime, timedelta
 
 import easyocr
 import ddddocr
-from loguru import logger
-from PIL import Image
 import numpy as np
+from PIL import Image
+from loguru import logger
+from notifypy import Notify
 
 
 def common_ocr(
@@ -116,6 +117,8 @@ def sleep_until_current_min(second: int):
     next_time = now.replace(second=second)
     wait = (next_time - now).total_seconds()
 
+    if wait > 10:
+        Notify("蛋仔助手", f"请于 {wait:.1f} 秒后再操作疯狂农场客户端！")
     if wait > 0:
         logger.info(f"等待 {wait:.0f} 秒 后进行截图")
 

@@ -116,6 +116,7 @@ dependencies = [
     { name = "easyocr" },
     { name = "loguru" },
     { name = "milky-python-sdk" },
+    { name = "notify-py" },
     { name = "pillow" },
     { name = "torch" },
     { name = "torchvision" },
@@ -127,6 +128,7 @@ requires-dist = [
     { name = "easyocr", specifier = ">=1.7.2" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "milky-python-sdk", specifier = ">=0.4.0" },
+    { name = "notify-py", specifier = ">=0.3.2" },
     { name = "pillow", specifier = ">=12.0.0" },
     { name = "torch", specifier = ">=2.10.0" },
     { name = "torchvision", specifier = ">=0.25.0" },
@@ -205,6 +207,15 @@ dependencies = [
 sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/a3/6f/606be632e37bf8d05b253e8626c2291d74c691ddc7bcdf7d6aaf33b32f6a/imageio-2.37.2.tar.gz", hash = "sha256:0212ef2727ac9caa5ca4b2c75ae89454312f440a756fcfc8ef1993e718f50f8a", size = 389600, upload-time = "2025-11-04T14:29:39.898Z" }
 wheels = [
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/fb/fe/301e0936b79bcab4cacc7548bf2853fc28dced0a578bab1f7ef53c9aa75b/imageio-2.37.2-py3-none-any.whl", hash = "sha256:ad9adfb20335d718c03de457358ed69f141021a333c40a53e57273d8a5bd0b9b", size = 317646, upload-time = "2025-11-04T14:29:37.948Z" },
+]
+
+[[package]]
+name = "jeepney"
+version = "0.9.0"
+source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/7b/6f/357efd7602486741aa73ffc0617fb310a29b588ed0fd69c2399acbb85b0c/jeepney-0.9.0.tar.gz", hash = "sha256:cf0e9e845622b81e4a28df94c40345400256ec608d0e55bb8a3feaa9163f5732", size = 106758, upload-time = "2025-02-27T18:51:01.684Z" }
+wheels = [
+    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/b2/a3/e137168c9c44d18eff0376253da9f1e9234d0239e0ee230d2fee6cea8e55/jeepney-0.9.0-py3-none-any.whl", hash = "sha256:97e5714520c16fc0a45695e5365a2e11b81ea79bba796e26f9f1d178cb182683", size = 49010, upload-time = "2025-02-27T18:51:00.104Z" },
 ]
 
 [[package]]
@@ -314,6 +325,19 @@ wheels = [
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/95/97/51359c77527d45943fe7a94d00a3843b81162e6c4244b3579fe8fc54cb9c/ninja-1.13.0-py3-none-win32.whl", hash = "sha256:8cfbb80b4a53456ae8a39f90ae3d7a2129f45ea164f43fadfa15dc38c4aef1c9", size = 267201, upload-time = "2025-08-11T15:10:15.158Z" },
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/29/45/c0adfbfb0b5895aa18cec400c535b4f7ff3e52536e0403602fc1a23f7de9/ninja-1.13.0-py3-none-win_amd64.whl", hash = "sha256:fb8ee8719f8af47fed145cced4a85f0755dd55d45b2bddaf7431fa89803c5f3e", size = 309975, upload-time = "2025-08-11T15:10:16.697Z" },
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/df/93/a7b983643d1253bb223234b5b226e69de6cda02b76cdca7770f684b795f5/ninja-1.13.0-py3-none-win_arm64.whl", hash = "sha256:3c0b40b1f0bba764644385319028650087b4c1b18cdfa6f45cb39a3669b81aa9", size = 290806, upload-time = "2025-08-11T15:10:18.018Z" },
+]
+
+[[package]]
+name = "notify-py"
+version = "0.3.2"
+source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "jeepney", marker = "sys_platform == 'linux'" },
+    { name = "loguru" },
+]
+sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/c0/91/81806bcf65c834f0f5469c6b1a7b593d1c4898d5f5ea00273a0fe7e6cda3/notify_py-0.3.2.tar.gz", hash = "sha256:016b54d20dff55713dce5428d6f6314d3a7e3e6d7d00a57c45ce813534e34a4e" }
+wheels = [
+    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/ed/44/1f4abc7755b4b75dce32a1a184c43bf0580b92f27b035198f885b18d5d1d/notify_py-0.3.2-py3-none-any.whl", hash = "sha256:bcf4a15582a61cab9b7eb6cb1b76c1a395e8eac6e34216d8612df68ef21c886b" },
 ]
 
 [[package]]
