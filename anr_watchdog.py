@@ -1,8 +1,16 @@
+import os
 import re
 import subprocess
 from datetime import datetime
 
+from loguru import logger
+from milky import OutgoingTextSegment, TextSegmentData
+from milky.client import MilkyError, MilkyHttpError
+
+from fknc_adb_helper.bot import BOT_CLIENT
+
 PACKAGE = "com.netease.party"
+ADMIN_ID = int(os.environ.get("ADMIN_ID", 0))
 
 # logcat 时间格式
 TIME_PATTERN = re.compile(r"(\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}\.\d{3})")
@@ -84,11 +92,19 @@ def main():
 
         last_anr_time = anr_time
 
-        print(f"ANR detected: {anr_time}")
-        print(line.strip())
-
+        logger.info(f"detected ANR at {anr_time}, kill & restarting...")
         kill_app()
         restart_app()
+
+        if ADMIN_ID:
+            segdata = TextSegmentData(
+                text=f"游戏进程由于 ANR 已重启，请操作登录！\n{anr_time}"
+            )
+            outgoing_seg = OutgoingTextSegment(data=segdata)
+            try:
+                BOT_CLIENT.send_private_message(ADMIN_ID, [outgoing_seg])
+            except MilkyHttpError | MilkyError as e:
+                logger.error(f"推送失败：{e}")
 
 
 if __name__ == "__main__":
