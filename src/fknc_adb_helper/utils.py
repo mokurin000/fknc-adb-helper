@@ -131,6 +131,16 @@ def sleep_until_current_min(second: int):
         time.sleep(wait)
 
 
+def swipe_store_page():
+    """
+    1920x1080
+    """
+
+    subprocess.call(
+        ["adb", "shell", "input", "swipe", "1443", "800", "1443", "600", "260"],
+    )
+
+
 def sleep_until_next_10min():
     """
     等待至下个刷新时间
