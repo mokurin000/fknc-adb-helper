@@ -272,7 +272,7 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
     found_weather = run_ocr(
         reader,
         screenshot=weather,
-        min_confidence=0.5,
+        min_confidence=0.3,
         crop_rect=WEATHER_RECT,
         recognize_type=RecognizeType.WEATHER,
     )
@@ -283,6 +283,9 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
             if weather_text in TARGET_WEATHER:
                 weather_string = weather_text
                 break
+        else:
+            if weather_text != "特殊":
+                logger.info(f"常规天气: {weather_text}")
 
     if weather_string:
         msg = weather_string.strip()
