@@ -118,6 +118,7 @@ def run_ocr(
     recognize_type: RecognizeType = RecognizeType.ITEM,
     min_confidence: float = 0.7,
     crop_rect: tuple[int, int, int, int] = None,
+    extra_img_suffix: str = "",
 ) -> dict[str, int | tuple[()]]:
     """
     调用OCR引擎，提取有效物品及其数量
@@ -137,8 +138,10 @@ def run_ocr(
         )
 
         ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
-        filename = f"pics/{ts}-{recognize_type.value}-result.png"
-        scr_filename = f"pics/{ts}-{recognize_type.value}-screenshot.png"
+        filename = f"pics/{ts}-{recognize_type.value}{extra_img_suffix}-result.png"
+        scr_filename = (
+            f"pics/{ts}-{recognize_type.value}{extra_img_suffix}-screenshot.png"
+        )
 
         img = scrshot_img.copy()
         draw = ImageDraw.Draw(img)
@@ -215,7 +218,7 @@ def alias_mapping(p):
 def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
     try:
         assert is_eggy_party()
-        seeds, tools = fetch_screenshot()
+        seed_pages, tool_page = fetch_screenshot()
     except AssertionError:
         logger.error("当前活动非蛋仔派对，跳过处理！")
         return
@@ -223,16 +226,19 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
         logger.error(f"截图失败：{e}")
         return
 
-    found_seeds = run_ocr(
-        reader,
-        screenshot=seeds,
-        dddd=None,
-        recognize_type=RecognizeType.SEED,
-        min_confidence=0.08,
-    )
+    found_seeds = {}
+    for i, seed_page in enumerate(seed_pages):
+        found_seeds |= run_ocr(
+            reader,
+            screenshot=seed_page,
+            dddd=None,
+            recognize_type=RecognizeType.SEED,
+            min_confidence=0.08,
+            extra_img_suffix=f"{i}",
+        )
     found_tools = run_ocr(
         reader,
-        screenshot=tools,
+        screenshot=tool_page,
         dddd=num_reader,
     )
 

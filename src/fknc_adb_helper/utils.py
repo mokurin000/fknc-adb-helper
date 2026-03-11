@@ -81,9 +81,7 @@ def fetch_weather() -> bytes:
     return take_screenshot()
 
 
-# TODO 滑动支持
-# TODO 更多分辨率支持
-def fetch_screenshot() -> tuple[bytes, bytes, bytes]:
+def fetch_screenshot() -> tuple[list[bytes], bytes]:
     """
     从 adb 连接获取截图
 
@@ -101,14 +99,18 @@ def fetch_screenshot() -> tuple[bytes, bytes, bytes]:
         time.sleep(1)
 
     tap_screen(1773, 89)  # Store
-    sleep_until_current_min(second=5)
+    sleep_until_current_min(second=4)
 
+    time.sleep(1)
     seeds = take_screenshot()
+    swipe_store_page()
+    time.sleep(1.5)
+    seeds2 = take_screenshot()
 
     tap_screen(1805, 381)  # Tools
     time.sleep(1)
     tools = take_screenshot()
-    return seeds, tools
+    return [seeds, seeds2], tools
 
 
 def sleep_until_current_min(second: int):
@@ -120,11 +122,14 @@ def sleep_until_current_min(second: int):
     wait = (next_time - now).total_seconds()
 
     if wait > 10:
-        NOTIFIER.show_toast(
-            "蛋仔助手",
-            f"请于 {wait:.1f} 秒后再操作疯狂农场客户端！",
-            threaded=True,
-        )
+        try:
+            NOTIFIER.show_toast(
+                "蛋仔助手",
+                f"请于 {wait:.1f} 秒后再操作疯狂农场客户端！",
+                threaded=True,
+            )
+        except Exception:
+            pass
     if wait > 0:
         logger.info(f"等待 {wait:.0f} 秒 后进行截图")
 
@@ -137,7 +142,7 @@ def swipe_store_page():
     """
 
     subprocess.call(
-        ["adb", "shell", "input", "swipe", "1443", "800", "1443", "600", "260"],
+        ["adb", "shell", "input", "swipe", "1443", "800", "1443", "600", "170"],
     )
 
 
