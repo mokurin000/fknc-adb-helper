@@ -7,7 +7,9 @@ import ddddocr
 import numpy as np
 from PIL import Image
 from loguru import logger
-from notifypy import Notify
+from win10toast import ToastNotifier
+
+NOTIFIER = ToastNotifier()
 
 
 def common_ocr(
@@ -118,7 +120,11 @@ def sleep_until_current_min(second: int):
     wait = (next_time - now).total_seconds()
 
     if wait > 10:
-        Notify("蛋仔助手", f"请于 {wait:.1f} 秒后再操作疯狂农场客户端！")
+        NOTIFIER.show_toast(
+            "蛋仔助手",
+            f"请于 {wait:.1f} 秒后再操作疯狂农场客户端！",
+            threaded=True,
+        )
     if wait > 0:
         logger.info(f"等待 {wait:.0f} 秒 后进行截图")
 
