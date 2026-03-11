@@ -76,6 +76,8 @@ def main():
         bufsize=1,
     )
 
+    # clean logcat buffer before first run
+    subprocess.run(["adb", "logcat", "-c"], capture_output=True)
     for line in proc.stdout:
         if "WindowManager: ANR in" not in line:
             continue
