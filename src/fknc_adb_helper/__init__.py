@@ -163,7 +163,7 @@ def run_ocr(
             left, top = top_left
             right, bottom = bottom_right
 
-            text = text.replace("孑", "子").replace("士", "土")
+            text = text.replace("孑", "子").replace("士", "土").replace("曰", "日")
             if validate_text(
                 text=text,
                 rec_type=recognize_type,
