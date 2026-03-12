@@ -87,7 +87,7 @@ def fetch_weather() -> bytes:
     random_sleep(1)
 
     sleep_until_current_min(second=40)
-    tap_screen(635, 48)  # Weather info
+    tap_screen(650, 48)  # Weather info
     random_sleep(1)
     return take_screenshot()
 
