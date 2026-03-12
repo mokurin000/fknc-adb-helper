@@ -18,7 +18,7 @@ def random_sleep(at_least_seconds: float):
 
 
 def randomize_coord(coord: int | str) -> str:
-    return f"{randint(-5, 5) + coord}"
+    return f"{randint(-10, 10) + coord}"
 
 
 def common_ocr(
