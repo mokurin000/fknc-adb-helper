@@ -1,5 +1,6 @@
 import time
 import subprocess
+from random import randint, random
 from datetime import datetime, timedelta
 
 import easyocr
@@ -10,6 +11,14 @@ from loguru import logger
 from win10toast import ToastNotifier
 
 NOTIFIER = ToastNotifier()
+
+
+def random_sleep(at_least_seconds: float):
+    time.sleep(at_least_seconds + random())
+
+
+def randomize_coord(coord: int | str) -> str:
+    return f"{randint(-5, 5) + coord}"
 
 
 def common_ocr(
@@ -63,7 +72,9 @@ def tap_screen(x: int, y: int):
     """
     模拟触控点击坐标 x, y
     """
-    subprocess.call(["adb", "shell", "input", "tap", f"{x}", f"{y}"])
+    subprocess.call(
+        ["adb", "shell", "input", "tap", randomize_coord(x), randomize_coord(y)]
+    )
 
 
 def fetch_weather() -> bytes:
@@ -73,11 +84,11 @@ def fetch_weather() -> bytes:
 
     # hard-coded for 1920x1080
     tap_screen(1804, 149)  # Close
-    time.sleep(1)
+    random_sleep(1)
 
     sleep_until_current_min(second=40)
     tap_screen(663, 46)  # Weather info
-    time.sleep(1)
+    random_sleep(1)
     return take_screenshot()
 
 
@@ -96,19 +107,19 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
         (1804, 149),  # Close
     ]:
         tap_screen(x, y)
-        time.sleep(1)
+        random_sleep(1)
 
     tap_screen(1773, 89)  # Store
     sleep_until_current_min(second=4)
 
-    time.sleep(1)
+    random_sleep(1)
     seeds = take_screenshot()
     swipe_store_page()
-    time.sleep(1.5)
+    random_sleep(1.5)
     seeds2 = take_screenshot()
 
     tap_screen(1805, 381)  # Tools
-    time.sleep(1)
+    random_sleep(1)
     tools = take_screenshot()
     return [seeds, seeds2], tools
 
@@ -133,7 +144,7 @@ def sleep_until_current_min(second: int):
     if wait > 0:
         logger.info(f"等待 {wait:.0f} 秒 后进行截图")
 
-        time.sleep(wait)
+        random_sleep(wait)
 
 
 def swipe_store_page():
@@ -142,7 +153,17 @@ def swipe_store_page():
     """
 
     subprocess.call(
-        ["adb", "shell", "input", "swipe", "1443", "800", "1443", "600", "170"],
+        [
+            "adb",
+            "shell",
+            "input",
+            "swipe",
+            randomize_coord(1443),
+            randomize_coord(800),
+            randomize_coord(1443),
+            randomize_coord(600),
+            f"{randint(170, 180)}",
+        ],
     )
 
 
@@ -160,7 +181,7 @@ def sleep_until_next_10min():
     wait = (next_time - now).total_seconds()
     logger.info(f"等待 {wait:.0f} 秒，下一次运行时间 {next_time.strftime('%H:%M:%S')}")
 
-    time.sleep(wait)
+    random_sleep(wait)
 
 
 def init_ddddocr() -> ddddocr.DdddOcr:
