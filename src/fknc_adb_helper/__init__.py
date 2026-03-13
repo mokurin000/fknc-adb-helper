@@ -297,6 +297,8 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
         else:
             if weather_text != "特殊":
                 logger.info(f"常规天气: {weather_text}")
+            if weather_text in ["雷雨", "暴雨"]:
+                send_message(weather_text, rain=True)
 
     if weather_string:
         msg = weather_string.strip()
