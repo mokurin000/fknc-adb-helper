@@ -12,11 +12,11 @@ def main():
     dddd = init_ddddocr()
 
     logger.info("loading test image...")
-    with open("test/amount.png", "rb") as f:
+    with open("test/brazier.png", "rb") as f:
         pic = f.read()
 
     result = run_ocr(reader, pic, dddd=dddd, save_dddd_rect=True)
-    assert result["月球白银洒水器"] == 1
+    assert result["火盆"] == 1
     logger.info("test passed!")
 
 

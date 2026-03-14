@@ -32,7 +32,7 @@ SAVE_SCREENSHOTS = False
 SAVE_RESULT = True
 
 ITEM_BG_WIDTH = 165
-ITEM_PRICE_WIDTH = 50
+ITEM_PRICE_WIDTH = 30
 ITEM_HEIGHT = 40
 
 TARGET_SEEDS = [
@@ -119,6 +119,7 @@ def run_ocr(
     min_confidence: float = 0.7,
     crop_rect: tuple[int, int, int, int] = None,
     extra_img_suffix: str = "",
+    save_dddd_rect: bool = False,
 ) -> dict[str, int | tuple[()]]:
     """
     调用OCR引擎，提取有效物品及其数量
@@ -189,6 +190,9 @@ def run_ocr(
                         num_region = scrshot_img.crop(
                             (num_left, num_top, num_right, num_bottom)
                         )
+
+                        if save_dddd_rect:
+                            num_region.save(f"dddd-{text}.png")
 
                         try:
                             result = int(dddd.classification(num_region))
