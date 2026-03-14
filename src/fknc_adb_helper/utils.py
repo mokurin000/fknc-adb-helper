@@ -14,7 +14,7 @@ NOTIFIER = ToastNotifier()
 
 
 def random_sleep(at_least_seconds: float):
-    time.sleep(at_least_seconds + random())
+    time.sleep(max(at_least_seconds, 5 + 5 * random()))
 
 
 def randomize_coord(coord: int | str) -> str:
