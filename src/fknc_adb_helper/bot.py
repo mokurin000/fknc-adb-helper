@@ -25,16 +25,15 @@ def init_client() -> MilkyClient:
 
 BOT_CLIENT = init_client()
 GROUPS_REGULAR = list(map(int, os.environ.get("SUBSCRIBE_GROUPS", "").split(",")))
-GROUPS_RAIN = list(map(int, os.environ.get("RAIN_GROUPS", "").split(",")))
 
 
-def send_message(msg: str, rain: bool = False):
+def send_message(msg: str):
     """
     向预配置的群组发送推送
     """
 
     global BOT_CLIENT
-    for group in GROUPS_REGULAR if not rain else GROUPS_RAIN:
+    for group in GROUPS_REGULAR:
         segdata = TextSegmentData(text=msg)
         outgoing_seg = OutgoingTextSegment(data=segdata)
         BOT_CLIENT.send_group_message(

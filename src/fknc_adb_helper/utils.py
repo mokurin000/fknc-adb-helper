@@ -1,6 +1,5 @@
 import time
 import subprocess
-from random import randint, random
 from datetime import datetime, timedelta
 
 import easyocr
@@ -8,17 +7,6 @@ import ddddocr
 import numpy as np
 from PIL import Image
 from loguru import logger
-from win10toast import ToastNotifier
-
-NOTIFIER = ToastNotifier()
-
-
-def random_sleep(at_least_seconds: float):
-    time.sleep(max(at_least_seconds, 5 + 5 * random()))
-
-
-def randomize_coord(coord: int | str) -> str:
-    return f"{randint(-10, 10) + coord}"
 
 
 def common_ocr(
@@ -68,30 +56,6 @@ def take_screenshot() -> bytes:
     ).stdout
 
 
-def tap_screen(x: int, y: int):
-    """
-    模拟触控点击坐标 x, y
-    """
-    subprocess.call(
-        ["adb", "shell", "input", "tap", randomize_coord(x), randomize_coord(y)]
-    )
-
-
-def fetch_weather() -> bytes:
-    """
-    当前状态必须为仓库/商店/未查看作物。
-    """
-
-    # hard-coded for 1920x1080
-    tap_screen(1800, 150)  # Close
-    random_sleep(1)
-
-    sleep_until_current_min(second=40)
-    tap_screen(650, 48)  # Weather info
-    random_sleep(1)
-    return take_screenshot()
-
-
 def fetch_screenshot() -> tuple[list[bytes], bytes]:
     """
     从 adb 连接获取截图
@@ -101,27 +65,9 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
     :return: 种子截图，工具截图
     """
 
-    # hard-coded for 1920x1080
-    for x, y in [
-        (960, 540),  # Cancel check crop
-        (1804, 149),  # Close
-    ]:
-        tap_screen(x, y)
-        random_sleep(1)
-
-    tap_screen(1773, 89)  # Store
-    sleep_until_current_min(second=4)
-
-    random_sleep(1)
-    seeds = take_screenshot()
-    swipe_store_page()
-    random_sleep(1.5)
-    seeds2 = take_screenshot()
-
-    tap_screen(1805, 381)  # Tools
-    random_sleep(1)
+    sleep_until_current_min(second=5)
     tools = take_screenshot()
-    return [seeds, seeds2], tools
+    return [], tools
 
 
 def sleep_until_current_min(second: int):
@@ -132,39 +78,10 @@ def sleep_until_current_min(second: int):
     next_time = now.replace(second=second)
     wait = (next_time - now).total_seconds()
 
-    if wait > 10:
-        try:
-            NOTIFIER.show_toast(
-                "蛋仔助手",
-                f"请于 {wait:.1f} 秒后再操作疯狂农场客户端！",
-                threaded=True,
-            )
-        except Exception:
-            pass
     if wait > 0:
         logger.info(f"等待 {wait:.0f} 秒 后进行截图")
 
-        random_sleep(wait)
-
-
-def swipe_store_page():
-    """
-    1920x1080
-    """
-
-    subprocess.call(
-        [
-            "adb",
-            "shell",
-            "input",
-            "swipe",
-            randomize_coord(1443),
-            randomize_coord(800),
-            randomize_coord(1443),
-            randomize_coord(600),
-            f"{randint(170, 180)}",
-        ],
-    )
+        time.sleep(wait)
 
 
 def sleep_until_next_10min():
@@ -180,8 +97,7 @@ def sleep_until_next_10min():
 
     wait = (next_time - now).total_seconds()
     logger.info(f"等待 {wait:.0f} 秒，下一次运行时间 {next_time.strftime('%H:%M:%S')}")
-
-    random_sleep(wait)
+    time.sleep(wait)
 
 
 def init_ddddocr() -> ddddocr.DdddOcr:

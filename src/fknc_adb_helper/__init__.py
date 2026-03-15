@@ -15,7 +15,6 @@ from fknc_adb_helper.bot import send_message
 from fknc_adb_helper.utils import (
     common_ocr,
     fetch_screenshot,
-    fetch_weather,
     init_ddddocr,
     init_general_ocr,
     is_eggy_party,
@@ -35,18 +34,6 @@ ITEM_BG_WIDTH = 165
 ITEM_PRICE_WIDTH = 30
 ITEM_HEIGHT = 40
 
-TARGET_SEEDS = [
-    "草莓",
-    "松树",
-    "向日葵",
-    "大王菊",
-    "蟠桃",
-    "月核树",
-    "液光藤",
-    "月影梅",
-    "幻月花",
-]
-
 TARGET_ITEMS = [
     "月球黄金洒水器",
     "黄金洒水器",
@@ -56,18 +43,6 @@ TARGET_ITEMS = [
     "白银洒水器",
     "月球标准洒水器",
 ]
-
-TARGET_WEATHER = {
-    "雾",
-    "荧光",
-    "彩虹",
-    "霓虹",
-    "日蚀",
-    "沙尘暴",
-    "流星雨",
-    "陨石雨",
-    "太阳耀斑",
-}
 
 ADDITION_ITEMS = [
     "农田置换卡",
@@ -106,9 +81,9 @@ def validate_text(text: str, rec_type: RecognizeType) -> bool:
         case RecognizeType.ITEM:
             return text in TARGET_ITEMS + ADDITION_ITEMS
         case RecognizeType.SEED:
-            return text.endswith("种子") and text.removesuffix("种子") in TARGET_SEEDS
+            return False
         case RecognizeType.WEATHER:
-            return True
+            return False
 
 
 def run_ocr(
@@ -178,9 +153,7 @@ def run_ocr(
                 rec_type=recognize_type,
             ):
                 region = scrshot_img.crop((left, top, right, bottom))
-                if recognize_type == RecognizeType.WEATHER:
-                    found_items[text] = ()
-                elif item_exists(region):
+                if item_exists(region):
                     if dddd is not None:
                         num_bottom = top + 10
                         num_top = num_bottom - ITEM_HEIGHT
@@ -222,7 +195,7 @@ def alias_mapping(p):
 def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
     try:
         assert is_eggy_party()
-        seed_pages, tool_page = fetch_screenshot()
+        _, tool_page = fetch_screenshot()
     except AssertionError:
         logger.error("当前活动非蛋仔派对，跳过处理！")
         return
@@ -230,16 +203,6 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
         logger.error(f"截图失败：{e}")
         return
 
-    found_seeds = {}
-    for i, seed_page in enumerate(seed_pages):
-        found_seeds |= run_ocr(
-            reader,
-            screenshot=seed_page,
-            dddd=None,
-            recognize_type=RecognizeType.SEED,
-            min_confidence=0.08,
-            extra_img_suffix=f"{i}",
-        )
     found_tools = run_ocr(
         reader,
         screenshot=tool_page,
@@ -247,12 +210,6 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
     )
 
     tools_string = ""
-    seeds_string = ""
-
-    if found_seeds:
-        seeds_string = "，".join(
-            map(lambda s: str.removesuffix(s, "种子"), found_seeds.keys())
-        )
 
     # must have one of valuable thing
     if set(found_tools.keys()) & set(TARGET_ITEMS):
@@ -266,48 +223,11 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
             )
         )
 
-    logger.info(f"识别结果：{list(found_seeds.items())} | {list(found_tools.items())}")
+    logger.info(f"识别结果：{list(found_tools.items())}")
 
-    msg = ""
-
-    if seeds_string or tools_string:
-        msg = "\n".join(
-            filter(
-                str.__len__,
-                f"{seeds_string}\n{tools_string}".split("\n"),
-            )
-        )
-
+    if tools_string:
         try:
-            send_message(msg)
-        except Exception as e:
-            logger.error(f"推送失败：{e}")
-
-    weather = fetch_weather()
-    found_weather = run_ocr(
-        reader,
-        screenshot=weather,
-        min_confidence=0.3,
-        crop_rect=WEATHER_RECT,
-        recognize_type=RecognizeType.WEATHER,
-    )
-
-    weather_string = ""
-    if found_weather:
-        for weather_text in found_weather:
-            if weather_text in TARGET_WEATHER:
-                weather_string = weather_text
-                break
-        else:
-            if weather_text != "特殊":
-                logger.info(f"常规天气: {weather_text}")
-            if weather_text in ["雷雨", "暴雨"]:
-                send_message(weather_text, rain=True)
-
-    if weather_string:
-        msg = weather_string.strip()
-        try:
-            send_message(msg)
+            send_message(tools_string)
         except Exception as e:
             logger.error(f"推送失败：{e}")
 
