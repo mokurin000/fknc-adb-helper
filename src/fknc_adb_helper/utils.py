@@ -11,6 +11,7 @@ from loguru import logger
 from win10toast import ToastNotifier
 
 NOTIFIER = ToastNotifier()
+SWIPE_SEEDS = False  # danger operation
 
 
 def random_sleep(at_least_seconds: float):
@@ -126,16 +127,19 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
     tap_screen(1773, 89)  # Store
     sleep_until_current_min(second=4)
 
+    seeds_lst = []
+
     random_sleep(1)
-    seeds = take_screenshot()
-    swipe_store_page()
-    random_sleep(1.5)
-    seeds2 = take_screenshot()
+    seeds_lst.append(take_screenshot())
+    if SWIPE_SEEDS:
+        swipe_store_page()
+        random_sleep(1.5)
+        seeds_lst.append(take_screenshot())
 
     tap_screen(1805, 381)  # Tools
     random_sleep(1)
     tools = take_screenshot()
-    return [seeds, seeds2], tools
+    return seeds_lst, tools
 
 
 def sleep_until_current_min(second: int):
