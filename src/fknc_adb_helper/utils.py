@@ -71,9 +71,23 @@ def take_screenshot() -> bytes:
 def tap_screen(x: int, y: int):
     """
     模拟触控点击坐标 x, y
+
+    随机消耗 50~150ms 完成点击
     """
+    x = randomize_coord(x)
+    y = randomize_coord(y)
     subprocess.call(
-        ["adb", "shell", "input", "tap", randomize_coord(x), randomize_coord(y)]
+        [
+            "adb",
+            "shell",
+            "input",
+            "swipe",
+            x,
+            y,
+            x,
+            y,
+            randint(100, 180),
+        ]
     )
 
 
