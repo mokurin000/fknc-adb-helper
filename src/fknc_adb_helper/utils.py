@@ -90,7 +90,7 @@ def tap_screen(x: int, y: int):
             y,
             x,
             y,
-            randint(100, 180),
+            f"{randint(100, 180)}",
         ]
     )
 
