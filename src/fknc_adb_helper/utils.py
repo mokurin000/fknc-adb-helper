@@ -15,7 +15,10 @@ SWIPE_SEEDS = False  # danger operation
 
 
 def random_sleep(at_least_seconds: float):
-    time.sleep(max(at_least_seconds, 5 + 5 * random()))
+    """
+    睡眠至少 at_least_seconds 秒，添加额外最多 2s 的延迟。
+    """
+    time.sleep(at_least_seconds + 2 * random())
 
 
 def randomize_coord(coord: int | str) -> str:
