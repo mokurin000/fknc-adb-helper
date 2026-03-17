@@ -131,14 +131,6 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
     :return: 种子截图，工具截图
     """
 
-    # hard-coded for 1920x1080
-    for x, y in [
-        (960, 540),  # Cancel check crop
-        (1804, 149),  # Close
-    ]:
-        tap_screen(x, y)
-        random_sleep(0)
-
     tap_screen(1773, 89)  # Store
     sleep_until_current_10min(second=4)
 
@@ -162,7 +154,7 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
     return seeds_lst, tools
 
 
-def sleep_until_current_10min(target_second: int = 30):
+def sleep_until_current_10min(second: int = 30):
     """
     等待到当前 10 分钟区间内的指定秒
     """
@@ -173,7 +165,7 @@ def sleep_until_current_10min(target_second: int = 30):
     base = now.replace(minute=(now.minute // 10) * 10, second=0, microsecond=0)
 
     # 本区间目标时间（如 09:10:30）
-    target_time = base + timedelta(seconds=target_second)
+    target_time = base + timedelta(seconds=second)
 
     # 如果已经过了这个时间，无需处理
     if target_time <= now:
