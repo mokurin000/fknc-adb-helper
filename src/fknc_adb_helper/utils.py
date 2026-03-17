@@ -76,7 +76,7 @@ def tap_screen(x: int, y: int):
     """
     模拟触控点击坐标 x, y
 
-    随机消耗 50~150ms 完成点击
+    随机消耗 100~180ms 完成点击
     """
     x = randomize_coord(x)
     y = randomize_coord(y)
