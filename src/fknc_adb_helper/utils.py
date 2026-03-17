@@ -11,9 +11,7 @@ import numpy as np
 from PIL import Image
 from dotenv import load_dotenv
 from loguru import logger
-from win10toast import ToastNotifier
 
-NOTIFIER = ToastNotifier()
 SWIPE_SEEDS = False  # danger operation
 
 load_dotenv()
@@ -115,8 +113,11 @@ def fetch_weather() -> bytes:
     random_sleep(0)
     tap_screen(1800, 150)  # Close
 
-    sleep_until_current_min(second=35)
+    sleep_until_current_10min(second=35)
+
+    random_sleep(0)
     tap_screen(650, 40)  # Weather info
+
     time.sleep(1)  # popup
     return take_screenshot()
 
@@ -139,7 +140,7 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
         random_sleep(0)
 
     tap_screen(1773, 89)  # Store
-    sleep_until_current_min(second=4)
+    sleep_until_current_10min(second=4)
 
     seeds_lst = []
 
@@ -161,27 +162,27 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
     return seeds_lst, tools
 
 
-def sleep_until_current_min(second: int):
+def sleep_until_current_10min(target_second: int = 30):
     """
-    等待至下个刷新时间，至少等待一次 random sleep
+    等待到当前 10 分钟区间内的指定秒
     """
+
     now = datetime.now()
-    next_time = now.replace(second=second)
-    wait = (next_time - now).total_seconds()
 
-    if wait > 10:
-        try:
-            NOTIFIER.show_toast(
-                "蛋仔助手",
-                f"请于 {wait:.1f} 秒后再操作疯狂农场客户端！",
-                threaded=True,
-            )
-        except Exception:
-            pass
-    if wait > 0:
-        logger.info(f"等待 {wait:.0f} 秒 后进行截图")
+    # 当前 10 分钟区间起点（如 09:13 -> 09:10）
+    base = now.replace(minute=(now.minute // 10) * 10, second=0, microsecond=0)
 
-    random_sleep(wait)
+    # 本区间目标时间（如 09:10:30）
+    target_time = base + timedelta(seconds=target_second)
+
+    # 如果已经过了这个时间，无需处理
+    if target_time <= now:
+        return
+
+    wait = (target_time - now).total_seconds()
+
+    logger.info(f"等待 {wait:.0f} 秒")
+    time.sleep(wait)
 
 
 def swipe_store_page():
