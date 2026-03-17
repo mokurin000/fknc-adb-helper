@@ -314,6 +314,8 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
 
 
 def main():
+    logger.remove()
+    logger.add(sys.stderr, level="DEBUG")
     logger.add(
         "ocr.log",
         rotation="10 MB",
