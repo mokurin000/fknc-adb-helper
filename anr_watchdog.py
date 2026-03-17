@@ -48,8 +48,8 @@ def restart_app():
     print("restart app")
 
     subprocess.run(
-        [
-            "adb",
+        adb_command_prefix()
+        + [
             "shell",
             "monkey",
             "-p",

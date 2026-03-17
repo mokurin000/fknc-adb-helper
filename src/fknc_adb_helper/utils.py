@@ -1,8 +1,9 @@
 import os
 import time
 import subprocess
-from random import randint, random
-from datetime import datetime, timedelta
+import random
+from random import randint
+from datetime import datetime, timedelta, timezone
 
 import easyocr
 import ddddocr
@@ -25,9 +26,9 @@ def adb_command_prefix() -> list[str]:
 
 def random_sleep(at_least_seconds: float):
     """
-    睡眠至少 at_least_seconds 秒，添加额外最多 2s 的延迟。
+    睡眠至少 at_least_seconds 秒，最少为随机 12s~15s
     """
-    time.sleep(at_least_seconds + 2 * random())
+    time.sleep(max(at_least_seconds, random.uniform(12, 15)))
 
 
 def randomize_coord(coord: int | str) -> str:
@@ -59,8 +60,8 @@ def common_ocr(
 def is_eggy_party() -> bool:
     return (
         subprocess.call(
-            [
-                "adb",
+            adb_command_prefix()
+            + [
                 "shell",
                 "dumpsys activity | grep -E 'mCurrentFocus' | grep 'com.netease.party/com.netease.party.Client'",
             ],
@@ -89,9 +90,10 @@ def tap_screen(x: int, y: int):
     """
     x = randomize_coord(x)
     y = randomize_coord(y)
+    logger.debug(f"Clicking ({x}, {y})...")
     subprocess.call(
-        [
-            "adb",
+        adb_command_prefix()
+        + [
             "shell",
             "input",
             "swipe",
@@ -110,12 +112,12 @@ def fetch_weather() -> bytes:
     """
 
     # hard-coded for 1920x1080
+    random_sleep(0)
     tap_screen(1800, 150)  # Close
-    random_sleep(1)
 
     sleep_until_current_min(second=35)
     tap_screen(650, 40)  # Weather info
-    random_sleep(1)
+    time.sleep(1)  # popup
     return take_screenshot()
 
 
@@ -134,29 +136,34 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
         (1804, 149),  # Close
     ]:
         tap_screen(x, y)
-        random_sleep(1)
+        random_sleep(0)
 
     tap_screen(1773, 89)  # Store
     sleep_until_current_min(second=4)
 
     seeds_lst = []
 
-    random_sleep(1)
-    seeds_lst.append(take_screenshot())
-    if SWIPE_SEEDS:
-        swipe_store_page()
-        random_sleep(1.5)
+    utc8 = timezone(timedelta(hours=8))
+    now = datetime.now(tz=utc8)
+    if now.hour >= 8:
+        time.sleep(1.5)  # wait for tools page to load
         seeds_lst.append(take_screenshot())
+        if SWIPE_SEEDS:
+            random_sleep(0)  # long sleep for operation
+            swipe_store_page()
+            time.sleep(1.5)
+            seeds_lst.append(take_screenshot())
 
+    random_sleep(0)  # long sleep for operation
     tap_screen(1805, 381)  # Tools
-    random_sleep(1)
+    time.sleep(1.5)  # page loading
     tools = take_screenshot()
     return seeds_lst, tools
 
 
 def sleep_until_current_min(second: int):
     """
-    等待至下个刷新时间
+    等待至下个刷新时间，至少等待一次 random sleep
     """
     now = datetime.now()
     next_time = now.replace(second=second)
@@ -174,7 +181,7 @@ def sleep_until_current_min(second: int):
     if wait > 0:
         logger.info(f"等待 {wait:.0f} 秒 后进行截图")
 
-        random_sleep(wait)
+    random_sleep(wait)
 
 
 def swipe_store_page():
@@ -183,8 +190,8 @@ def swipe_store_page():
     """
 
     subprocess.call(
-        [
-            "adb",
+        adb_command_prefix()
+        + [
             "shell",
             "input",
             "swipe",
@@ -211,7 +218,7 @@ def sleep_until_next_10min():
     wait = (next_time - now).total_seconds()
     logger.info(f"等待 {wait:.0f} 秒，下一次运行时间 {next_time.strftime('%H:%M:%S')}")
 
-    random_sleep(wait)
+    time.sleep(wait)
 
 
 def init_ddddocr() -> ddddocr.DdddOcr:
