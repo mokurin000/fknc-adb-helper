@@ -1,3 +1,4 @@
+import os
 import time
 import subprocess
 from random import randint, random
@@ -7,11 +8,19 @@ import easyocr
 import ddddocr
 import numpy as np
 from PIL import Image
+from dotenv import load_dotenv
 from loguru import logger
 from win10toast import ToastNotifier
 
 NOTIFIER = ToastNotifier()
 SWIPE_SEEDS = False  # danger operation
+
+load_dotenv()
+ADB_OPTIONS = os.environ.get("ADB_OPTIONS", "")
+
+
+def adb_command_prefix() -> list[str]:
+    return ["adb"] + ADB_OPTIONS.split(" ")
 
 
 def random_sleep(at_least_seconds: float):
@@ -66,7 +75,7 @@ def take_screenshot() -> bytes:
     获取当前屏幕截图，返回PNG字节
     """
     return subprocess.run(
-        ["adb", "exec-out", "screencap", "-p"],
+        adb_command_prefix() + ["exec-out", "screencap", "-p"],
         stdout=subprocess.PIPE,
         check=True,
     ).stdout

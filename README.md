@@ -33,4 +33,7 @@ MILKY_TIMEOUT=30
 SUBSCRIBE_GROUPS=12345678,87654321
 # 订阅下雨
 RAIN_GROUPS=12345678,87654321
+
+# 添加 -e / -d / -s serial / -t transportId 等
+ADB_OPTIONS=
 ```

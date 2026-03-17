@@ -8,6 +8,7 @@ from milky import OutgoingTextSegment, TextSegmentData
 from milky.client import MilkyError, MilkyHttpError
 
 from fknc_adb_helper.bot import BOT_CLIENT
+from fknc_adb_helper.utils import adb_command_prefix
 
 PACKAGE = "com.netease.party"
 ADMIN_ID = int(os.environ.get("ADMIN_ID", 0))
@@ -37,7 +38,7 @@ def kill_app():
     print("force-stop app")
 
     subprocess.run(
-        ["adb", "shell", "am", "force-stop", PACKAGE],
+        adb_command_prefix() + ["shell", "am", "force-stop", PACKAGE],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
@@ -68,7 +69,7 @@ def main():
     print("starting ANR watchdog...")
 
     proc = subprocess.Popen(
-        ["adb", "logcat"],
+        adb_command_prefix() + ["logcat"],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -77,7 +78,7 @@ def main():
     )
 
     # clean logcat buffer before first run
-    subprocess.run(["adb", "logcat", "-c"], capture_output=True)
+    subprocess.run(adb_command_prefix() + ["logcat", "-c"], capture_output=True)
     for line in proc.stdout:
         if "WindowManager: ANR in" not in line:
             continue

@@ -4,6 +4,8 @@ import numpy as np
 import random
 from typing import List, Tuple
 
+from fknc_adb_helper.utils import adb_command_prefix
+
 
 def sigmoid_ease(t: np.ndarray, k: float = 10.0) -> np.ndarray:
     """Sigmoid ease-in-out function"""
@@ -14,7 +16,10 @@ def run_adb_command(args: List[str]) -> None:
     """Run adb shell input command and raise if it fails"""
     try:
         subprocess.run(
-            ["adb", "shell", "input"] + args, check=True, capture_output=True, text=True
+            adb_command_prefix() + ["shell", "input"] + args,
+            check=True,
+            capture_output=True,
+            text=True,
         )
     except subprocess.CalledProcessError as e:
         print(f"ADB command failed: {' '.join(args)}")
