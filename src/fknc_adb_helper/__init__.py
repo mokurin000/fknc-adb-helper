@@ -26,7 +26,7 @@ from fknc_adb_helper.detect_item import item_exists
 # left, top, right, bottom (pixel)
 # for 1920x1080
 STORE_RECT = (1149, 345, 1149 + 593, 345 + 688)
-WEATHER_RECT = (546, 103, 1084, 177)
+WEATHER_RECT = (540, 103, 1084, 177)
 
 SAVE_SCREENSHOTS = False
 SAVE_RESULT = True
@@ -288,7 +288,7 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
     found_weather = run_ocr(
         reader,
         screenshot=weather,
-        min_confidence=0.3,
+        min_confidence=0.20,
         crop_rect=WEATHER_RECT,
         recognize_type=RecognizeType.WEATHER,
     )
