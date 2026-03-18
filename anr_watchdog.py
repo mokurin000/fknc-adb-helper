@@ -68,6 +68,9 @@ def main():
 
     print("starting ANR watchdog...")
 
+    # clean logcat buffer before first run
+    subprocess.run(adb_command_prefix() + ["logcat", "-c"], capture_output=True)
+
     proc = subprocess.Popen(
         adb_command_prefix() + ["logcat"],
         stdout=subprocess.PIPE,
@@ -77,8 +80,6 @@ def main():
         bufsize=1,
     )
 
-    # clean logcat buffer before first run
-    subprocess.run(adb_command_prefix() + ["logcat", "-c"], capture_output=True)
     for line in proc.stdout:
         if "WindowManager: ANR in" not in line:
             continue
