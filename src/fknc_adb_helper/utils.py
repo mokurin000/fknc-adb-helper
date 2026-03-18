@@ -12,7 +12,7 @@ from PIL import Image
 from dotenv import load_dotenv
 from loguru import logger
 
-SWIPE_SEEDS = False  # danger operation
+SWIPE_SEEDS = True
 
 load_dotenv()
 ADB_OPTIONS = os.environ.get("ADB_OPTIONS", "")
@@ -24,9 +24,9 @@ def adb_command_prefix() -> list[str]:
 
 def random_sleep(at_least_seconds: float):
     """
-    睡眠至少 at_least_seconds 秒，最少为随机 12s~15s
+    睡眠至少 at_least_seconds 秒，或随机 10s~12s
     """
-    time.sleep(max(at_least_seconds, random.uniform(12, 15)))
+    time.sleep(max(at_least_seconds, random.uniform(10, 12)))
 
 
 def randomize_coord(coord: int | str) -> str:
@@ -115,7 +115,7 @@ def fetch_weather() -> bytes:
 
     random_sleep(0)
     sleep_until_current_10min(second=45)
-    tap_screen(650, 40)  # Weather info
+    tap_screen(648, 47)  # Weather info
 
     time.sleep(1)  # popup
     return take_screenshot()
