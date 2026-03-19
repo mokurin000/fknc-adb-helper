@@ -136,7 +136,7 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
     :return: 种子截图，工具截图
     """
 
-    tap_screen(1773, 89)  # Store
+    tap_screen(1790, 80)  # Store
     sleep_until_current_10min(second=4)
 
     seeds_lst = []
