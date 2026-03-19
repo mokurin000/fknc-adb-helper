@@ -27,7 +27,7 @@ def random_sleep(at_least_seconds: float):
     睡眠至少 at_least_seconds 秒，或随机 10s~12s
     """
     seconds = max(at_least_seconds, random.uniform(10, 12))
-    logger.debug(f"睡眠 {seconds}s 后操作...")
+    logger.debug(f"Sleeping for {seconds:.2f}s...")
     time.sleep(seconds)
 
 
