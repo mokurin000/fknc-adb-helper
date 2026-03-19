@@ -116,7 +116,7 @@ def fetch_weather() -> bytes:
     tap_screen(1800, 150)  # Close
 
     random_sleep(0)
-    sleep_until_current_10min(second=45)
+    sleep_until_current_10min(second=50)
     tap_screen(644, 44)  # Weather info
 
     time.sleep(1)  # popup
