@@ -90,7 +90,8 @@ def tap_screen(x: int, y: int):
     """
     x = randomize_coord(x)
     y = randomize_coord(y)
-    logger.debug(f"Clicking ({x}, {y})...")
+    hold = randint(100, 180)
+    logger.debug(f"Pressing ({x}, {y}) for {hold}ms...")
     subprocess.call(
         adb_command_prefix()
         + [
@@ -101,7 +102,7 @@ def tap_screen(x: int, y: int):
             y,
             x,
             y,
-            f"{randint(100, 180)}",
+            f"{hold}",
         ]
     )
 
