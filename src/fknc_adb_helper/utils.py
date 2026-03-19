@@ -121,6 +121,12 @@ def fetch_weather() -> bytes:
     return take_screenshot()
 
 
+def utc8_time() -> datetime:
+    utc8 = timezone(timedelta(hours=8))
+    now = datetime.now(tz=utc8)
+    return now
+
+
 def fetch_screenshot() -> tuple[list[bytes], bytes]:
     """
     从 adb 连接获取截图
@@ -135,8 +141,7 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
 
     seeds_lst = []
 
-    utc8 = timezone(timedelta(hours=8))
-    now = datetime.now(tz=utc8)
+    now = utc8_time()
     if now.hour >= 8:
         time.sleep(1.5)  # wait for tools page to load
         seeds_lst.append(take_screenshot())
