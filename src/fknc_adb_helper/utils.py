@@ -23,12 +23,12 @@ def adb_command_prefix() -> list[str]:
     return ["adb"] + ADB_OPTIONS.split(" ")
 
 
-def random_sleep(at_least_seconds: float):
+def random_sleep(reason: str = ""):
     """
-    睡眠至少 at_least_seconds 秒，或随机 10s~12s
+    睡眠随机 10s~12s
     """
-    seconds = max(at_least_seconds, random.uniform(10, 12))
-    logger.debug(f"Sleeping for {seconds:.2f}s...")
+    seconds = random.uniform(10, 12)
+    logger.debug(f"Sleeping {seconds:.2f}s..." + f" {reason}" if reason else "")
     time.sleep(seconds)
 
 
@@ -114,10 +114,10 @@ def fetch_weather() -> bytes:
     """
 
     # hard-coded for 1920x1080
-    random_sleep(0)
+    random_sleep("Close store page")
     tap_screen(1800, 150)  # Close
 
-    random_sleep(0)
+    random_sleep("Open weather popup")
     sleep_until_current_10min(second=45)
     tap_screen(644, 44)  # Weather info
 
@@ -131,7 +131,7 @@ def hide_weather():
     """
     显示天气后调用，否则可能商店打开操作只隐藏了天气弹窗。
     """
-    random_sleep(0)
+    random_sleep("Hide weather popup")
     tap_screen(1661, 775)  # Hide weather info
 
 
@@ -160,12 +160,12 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
         time.sleep(1.5)  # wait for tools page to load
         seeds_lst.append(take_screenshot())
         if SWIPE_SEEDS:
-            random_sleep(0)  # long sleep for operation
+            random_sleep("Swipe seeds page")  # long sleep for operation
             swipe_store_page()
             time.sleep(1.5)
             seeds_lst.append(take_screenshot())
 
-    random_sleep(0)  # long sleep for operation
+    random_sleep("Switch to tools")  # long sleep for operation
     tap_screen(1805, 381)  # Tools
     time.sleep(1.5)  # page loading
     tools = take_screenshot()
