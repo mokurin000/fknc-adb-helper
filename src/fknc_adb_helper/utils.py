@@ -13,8 +13,6 @@ from PIL import Image
 from dotenv import load_dotenv
 from loguru import logger
 
-SWIPE_SEEDS = False
-
 load_dotenv()
 ADB_OPTIONS = os.environ.get("ADB_OPTIONS", "")
 
@@ -159,11 +157,6 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
     if now.hour >= 8:
         time.sleep(1.5)  # wait for tools page to load
         seeds_lst.append(take_screenshot())
-        if SWIPE_SEEDS:
-            random_sleep("Swipe seeds page")  # long sleep for operation
-            swipe_store_page()
-            time.sleep(1.5)
-            seeds_lst.append(take_screenshot())
 
     random_sleep("Switch to tools")  # long sleep for operation
     tap_screen(1805, 381)  # Tools
@@ -193,26 +186,6 @@ def sleep_until_current_10min(second: int = 30):
 
     logger.debug(f"等待 {wait:.0f}s...")
     time.sleep(wait)
-
-
-def swipe_store_page():
-    """
-    1920x1080
-    """
-
-    subprocess.call(
-        adb_command_prefix()
-        + [
-            "shell",
-            "input",
-            "swipe",
-            randomize_coord(1443),
-            randomize_coord(800),
-            randomize_coord(1443),
-            randomize_coord(600),
-            f"{randint(170, 180)}",
-        ],
-    )
 
 
 def sleep_until_next_10min():
