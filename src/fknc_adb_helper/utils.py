@@ -4,6 +4,7 @@ import subprocess
 import random
 from random import randint
 from datetime import datetime, timedelta, timezone
+from threading import Thread
 
 import easyocr
 import ddddocr
@@ -120,8 +121,18 @@ def fetch_weather() -> bytes:
     sleep_until_current_10min(second=45)
     tap_screen(644, 44)  # Weather info
 
-    time.sleep(2)  # popup
+    Thread(target=hide_weather).start()
+
+    time.sleep(1)  # popup
     return take_screenshot()
+
+
+def hide_weather():
+    """
+    显示天气后调用，否则可能商店打开操作只隐藏了天气弹窗。
+    """
+    random_sleep(0)
+    tap_screen(1661, 775)  # Hide weather info
 
 
 def utc8_time() -> datetime:
