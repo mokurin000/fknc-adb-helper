@@ -13,7 +13,7 @@ from PIL import Image
 from dotenv import load_dotenv
 from loguru import logger
 
-SWIPE_SEEDS = True
+SWIPE_SEEDS = False
 
 load_dotenv()
 ADB_OPTIONS = os.environ.get("ADB_OPTIONS", "")
@@ -25,9 +25,9 @@ def adb_command_prefix() -> list[str]:
 
 def random_sleep(reason: str = ""):
     """
-    睡眠随机 10s~12s
+    睡眠随机 12s~15s
     """
-    seconds = random.uniform(10, 12)
+    seconds = random.uniform(12, 15)
     logger.debug(f"Sleeping {seconds:.2f}s..." + f" {reason}" if reason else "")
     time.sleep(seconds)
 
@@ -87,11 +87,11 @@ def tap_screen(x: int, y: int):
     """
     模拟触控点击坐标 x, y
 
-    随机消耗 100~150ms 完成点击
+    随机消耗 140~180ms 完成点击
     """
     x = randomize_coord(x)
     y = randomize_coord(y)
-    hold = randint(100, 150)
+    hold = randint(140, 180)
     logger.debug(f"Pressing ({x}, {y}) for {hold}ms...")
     subprocess.call(
         adb_command_prefix()
