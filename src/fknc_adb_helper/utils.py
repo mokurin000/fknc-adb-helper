@@ -86,11 +86,11 @@ def tap_screen(x: int, y: int):
     """
     模拟触控点击坐标 x, y
 
-    随机消耗 100~180ms 完成点击
+    随机消耗 100~150ms 完成点击
     """
     x = randomize_coord(x)
     y = randomize_coord(y)
-    hold = randint(100, 180)
+    hold = randint(100, 150)
     logger.debug(f"Pressing ({x}, {y}) for {hold}ms...")
     subprocess.call(
         adb_command_prefix()
