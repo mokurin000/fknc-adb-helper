@@ -26,7 +26,9 @@ def random_sleep(at_least_seconds: float):
     """
     睡眠至少 at_least_seconds 秒，或随机 10s~12s
     """
-    time.sleep(max(at_least_seconds, random.uniform(10, 12)))
+    seconds = max(at_least_seconds, random.uniform(10, 12))
+    logger.debug(f"睡眠 {seconds}s 后操作...")
+    time.sleep(seconds)
 
 
 def randomize_coord(coord: int | str) -> str:
@@ -177,7 +179,7 @@ def sleep_until_current_10min(second: int = 30):
 
     wait = (target_time - now).total_seconds()
 
-    logger.info(f"等待 {wait:.0f} 秒")
+    logger.debug(f"等待 {wait:.0f}s...")
     time.sleep(wait)
 
 
