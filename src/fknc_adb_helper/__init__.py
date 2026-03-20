@@ -238,7 +238,7 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
             screenshot=seed_page,
             dddd=None,
             recognize_type=RecognizeType.SEED,
-            min_confidence=0.08,
+            min_confidence=0.06,
             extra_img_suffix=f"{i}",
         )
     found_tools = run_ocr(
