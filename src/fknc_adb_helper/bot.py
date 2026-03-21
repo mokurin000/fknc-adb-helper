@@ -24,10 +24,18 @@ def init_client() -> MilkyClient:
     return client
 
 
+def groups_from_env(var: str) -> list[int]:
+    groups = os.environ.get(var, "")
+    if not groups:
+        return []
+
+    return list(map(int, groups.split(",")))
+
+
 BOT_CLIENT = init_client()
-GROUPS_REGULAR = list(map(int, os.environ.get("SUBSCRIBE_GROUPS", "").split(",")))
-GROUPS_RAIN = list(map(int, os.environ.get("RAIN_GROUPS", "").split(",")))
-NO_DISTURB = list(map(int, os.environ.get("NO_DISTURB", "").split(",")))
+GROUPS_REGULAR = groups_from_env("SUBSCRIBE_GROUPS")
+GROUPS_RAIN = groups_from_env("RAIN_GROUPS")
+NO_DISTURB = groups_from_env("NO_DISTURB")
 
 
 def send_message(msg: str, rain: bool = False):
