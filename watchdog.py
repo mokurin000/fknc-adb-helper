@@ -2,21 +2,21 @@ import os
 import re
 import subprocess
 from datetime import datetime
+from threading import Thread
+import time
 
 from loguru import logger
 from milky import OutgoingTextSegment, TextSegmentData
 from milky.client import MilkyError, MilkyHttpError
 
 from fknc_adb_helper.bot import BOT_CLIENT
-from fknc_adb_helper.utils import adb_command_prefix
+from fknc_adb_helper.utils import adb_command_prefix, take_screenshot
 
 PACKAGE = "com.netease.party"
 ADMIN_ID = int(os.environ.get("ADMIN_ID", 0))
 
 # logcat 时间格式
 TIME_PATTERN = re.compile(r"(\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}\.\d{3})")
-
-last_anr_time: datetime | None = None
 
 
 def parse_time(line: str) -> datetime | None:
@@ -59,11 +59,17 @@ def restart_app():
     )
 
 
-def main():
-    global last_anr_time
+def stuck_watchdog():
+    last_screenshot = take_screenshot()
+    while True:
+        time.sleep(30)
+        screenshot = take_screenshot()
+        if screenshot == last_screenshot:
+            restart_app()
+        last_screenshot = screenshot
 
-    print("starting ANR watchdog...")
 
+def anr_watchdog():
     # clean logcat buffer before first run
     subprocess.run(adb_command_prefix() + ["logcat", "-c"], capture_output=True)
 
@@ -75,6 +81,7 @@ def main():
         encoding="utf-8",
         bufsize=1,
     )
+    last_anr_time = None
 
     for line in proc.stdout:
         if "WindowManager: ANR in" not in line:
@@ -104,6 +111,22 @@ def main():
                 BOT_CLIENT.send_private_message(ADMIN_ID, [outgoing_seg])
             except MilkyHttpError | MilkyError as e:
                 logger.error(f"推送失败：{e}")
+
+
+def main():
+    logger.info("starting ANR watchdog...")
+    threads: list[Thread] = []
+
+    for func in [
+        anr_watchdog,
+        stuck_watchdog,
+    ]:
+        thread = Thread(target=func)
+        thread.start()
+        threads.append(thread)
+
+    for thread in threads:
+        thread.join()
 
 
 if __name__ == "__main__":
