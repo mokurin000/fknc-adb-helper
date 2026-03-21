@@ -60,6 +60,8 @@ def restart_app():
 
 
 def stuck_watchdog():
+    logger.info("starting stuck watchdog...")
+
     last_screenshot = take_screenshot()
     while True:
         time.sleep(30)
@@ -70,6 +72,8 @@ def stuck_watchdog():
 
 
 def anr_watchdog():
+    logger.info("starting ANR watchdog...")
+
     # clean logcat buffer before first run
     subprocess.run(adb_command_prefix() + ["logcat", "-c"], capture_output=True)
 
@@ -114,7 +118,6 @@ def anr_watchdog():
 
 
 def main():
-    logger.info("starting ANR watchdog...")
     threads: list[Thread] = []
 
     for func in [
