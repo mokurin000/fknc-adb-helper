@@ -4,7 +4,6 @@ import subprocess
 import random
 from random import randint
 from datetime import datetime, timedelta, timezone
-from threading import Thread
 
 import easyocr
 import ddddocr
@@ -81,58 +80,6 @@ def take_screenshot() -> bytes:
     ).stdout
 
 
-def tap_screen(x: int, y: int):
-    """
-    模拟触控点击坐标 x, y
-
-    随机消耗 140~180ms 完成点击
-    """
-    x = randomize_coord(x)
-    y = randomize_coord(y)
-    hold = randint(140, 180)
-    logger.debug(f"Pressing ({x}, {y}) for {hold}ms...")
-    subprocess.call(
-        adb_command_prefix()
-        + [
-            "shell",
-            "input",
-            "swipe",
-            x,
-            y,
-            x,
-            y,
-            f"{hold}",
-        ]
-    )
-
-
-def fetch_weather() -> bytes:
-    """
-    当前状态必须为仓库/商店/未查看作物。
-    """
-
-    # hard-coded for 1920x1080
-    random_sleep("Close store page")
-    tap_screen(1800, 150)  # Close
-
-    random_sleep("Open weather popup")
-    sleep_until_current_10min(second=45)
-    tap_screen(644, 44)  # Weather info
-
-    Thread(target=hide_weather).start()
-
-    time.sleep(1)  # popup
-    return take_screenshot()
-
-
-def hide_weather():
-    """
-    显示天气后调用，否则可能商店打开操作只隐藏了天气弹窗。
-    """
-    random_sleep("Hide weather popup")
-    tap_screen(1661, 775)  # Hide weather info
-
-
 def utc8_time() -> datetime:
     utc8 = timezone(timedelta(hours=8))
     now = datetime.now(tz=utc8)
@@ -143,26 +90,12 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
     """
     从 adb 连接获取截图
 
-    :param: skip_sleep 跳过等待至下个整分钟 05 秒。
-
     :return: 种子截图，工具截图
     """
 
-    tap_screen(1790, 80)  # Store
     sleep_until_current_10min(second=4)
-
-    seeds_lst = []
-
-    now = utc8_time()
-    if now.hour >= 8:
-        time.sleep(1.5)  # wait for tools page to load
-        seeds_lst.append(take_screenshot())
-
-    random_sleep("Switch to tools")  # long sleep for operation
-    tap_screen(1805, 381)  # Tools
-    time.sleep(1.5)  # page loading
     tools = take_screenshot()
-    return seeds_lst, tools
+    return [], tools
 
 
 def sleep_until_current_10min(second: int = 30):

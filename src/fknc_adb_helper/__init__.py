@@ -15,7 +15,6 @@ from fknc_adb_helper.bot import send_message
 from fknc_adb_helper.utils import (
     common_ocr,
     fetch_screenshot,
-    fetch_weather,
     init_ddddocr,
     init_general_ocr,
     is_eggy_party,
@@ -279,34 +278,6 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
             )
         )
 
-        try:
-            send_message(msg)
-        except Exception as e:
-            logger.error(f"推送失败：{e}")
-
-    weather = fetch_weather()
-    found_weather = run_ocr(
-        reader,
-        screenshot=weather,
-        min_confidence=0.20,
-        crop_rect=WEATHER_RECT,
-        recognize_type=RecognizeType.WEATHER,
-    )
-
-    weather_string = ""
-    if found_weather:
-        for weather_text in found_weather:
-            if weather_text in TARGET_WEATHER:
-                weather_string = weather_text
-                break
-        else:
-            if weather_text != "特殊":
-                logger.info(f"常规天气: {weather_text}")
-            if weather_text in ["雷雨", "暴雨"]:
-                send_message(weather_text, rain=True)
-
-    if weather_string:
-        msg = weather_string.strip()
         try:
             send_message(msg)
         except Exception as e:
