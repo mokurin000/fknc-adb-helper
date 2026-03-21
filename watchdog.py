@@ -34,19 +34,15 @@ def parse_time(line: str) -> datetime | None:
     )
 
 
-def kill_app():
-    print("force-stop app")
-
+def restart_app():
+    logger.info("killing process...")
     subprocess.run(
         adb_command_prefix() + ["shell", "am", "force-stop", PACKAGE],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
 
-
-def restart_app():
-    print("restart app")
-
+    logger.info("launching process...")
     subprocess.run(
         adb_command_prefix()
         + [
@@ -96,8 +92,7 @@ def main():
 
         last_anr_time = anr_time
 
-        logger.info(f"detected ANR at {anr_time}, kill & restarting...")
-        kill_app()
+        logger.info(f"detected ANR at {anr_time}")
         restart_app()
 
         if ADMIN_ID:
