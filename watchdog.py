@@ -10,7 +10,7 @@ from milky import OutgoingTextSegment, TextSegmentData
 from milky.client import MilkyError, MilkyHttpError
 
 from fknc_adb_helper.bot import BOT_CLIENT
-from fknc_adb_helper.utils import adb_command_prefix, take_screenshot
+from fknc_adb_helper.utils import adb_command_prefix, take_screenshot, utc8_time
 
 PACKAGE = "com.netease.party"
 ADMIN_ID = int(os.environ.get("ADMIN_ID", 0))
@@ -34,7 +34,15 @@ def parse_time(line: str) -> datetime | None:
     )
 
 
-def restart_app():
+def restart_app(notify: str):
+    if ADMIN_ID:
+        segdata = TextSegmentData(text=notify)
+        outgoing_seg = OutgoingTextSegment(data=segdata)
+        try:
+            BOT_CLIENT.send_private_message(ADMIN_ID, [outgoing_seg])
+        except MilkyHttpError | MilkyError as e:
+            logger.error(f"推送失败：{e}")
+
     logger.info("killing process...")
     subprocess.run(
         adb_command_prefix() + ["shell", "am", "force-stop", PACKAGE],
@@ -67,7 +75,7 @@ def stuck_watchdog():
         time.sleep(30)
         screenshot = take_screenshot()
         if screenshot == last_screenshot:
-            restart_app()
+            restart_app(f"{utc8_time()}\n游戏画面卡死，请操作登录！")
         last_screenshot = screenshot
 
 
@@ -104,17 +112,7 @@ def anr_watchdog():
         last_anr_time = anr_time
 
         logger.info(f"detected ANR at {anr_time}")
-        restart_app()
-
-        if ADMIN_ID:
-            segdata = TextSegmentData(
-                text=f"游戏进程由于 ANR 已重启，请操作登录！\n{anr_time}"
-            )
-            outgoing_seg = OutgoingTextSegment(data=segdata)
-            try:
-                BOT_CLIENT.send_private_message(ADMIN_ID, [outgoing_seg])
-            except MilkyHttpError | MilkyError as e:
-                logger.error(f"推送失败：{e}")
+        restart_app(f"{anr_time}\n游戏进程由于 ANR 已重启，请操作登录！")
 
 
 def main():
