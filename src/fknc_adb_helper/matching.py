@@ -9,11 +9,11 @@ from fknc_adb_helper.utils import take_screenshot, sleep_until_current_10min
 
 NAME_MAP = {
     "darkfog": "暗雾",
-    "eclipse": "日蚀",
     "firefly": "萤光",
-    "meteor-shower": "流星雨",
     "rainball": "彩虹",
+    "eclipse": "日蚀",
     "sandstorm": "沙尘暴",
+    "meteor-shower": "流星雨",
     "solarflare": "太阳耀斑",
     "thunderstorm": "雷雨",
     "deluge": "暴雨",
