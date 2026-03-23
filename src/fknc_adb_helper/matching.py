@@ -33,7 +33,7 @@ def read_gray_image(path: str | os.PathLike[str]):
     return cv.imread(path, cv.IMREAD_GRAYSCALE)
 
 
-def find_weather(after_5min: bool = False) -> str | None:
+def find_weather(after_5min: bool = False) -> list[str]:
     temp_path = "temp_match.png"
     for second in range(30, 51, 5):
         skipped = sleep_until_current_10min(
@@ -44,19 +44,19 @@ def find_weather(after_5min: bool = False) -> str | None:
             f.write(take_screenshot())
         image = read_gray_image(path=temp_path)
         detected = detect_weather(image)
-        if detected is not None:
+        if detected:
             return detected
 
         if skipped:
             break
 
-    return None
+    return []
 
 
 def detect_weather(
     image: MatLike,
     threshold: float = 0.8,
-) -> str | None:
+) -> list[str]:
     global _WEATHERS
 
     with _WEATHERS_LOCK:
@@ -66,15 +66,15 @@ def detect_weather(
     # image: 1920x1080
     image = image[24:69, 572:780]
 
-    for weather_name, template in _WEATHERS.items():
+    return [
+        weather_name
+        for weather_name, template in _WEATHERS.items()
         if match_object(
             image=image,
             template=template,
             threshold=threshold,
-        ):
-            return weather_name
-
-    return None
+        )
+    ]
 
 
 def init_weathers() -> dict[str, MatLike]:
