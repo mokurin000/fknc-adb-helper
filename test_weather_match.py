@@ -38,14 +38,12 @@ if __name__ == "__main__":
         else:
             logger.info(f"{weather} matching passed!")
 
-    # not matching test
-    for weather in test_pics:
         others = set(test_pics)
         others.remove(weather)
         for other in others:
             try:
                 assert not test_match(weather, test_weather=other)
             except AssertionError:
-                logger.error(f"{weather} in {other} not matching failed!")
+                logger.error(f"{weather} not in {other} test failed!")
             else:
-                logger.info(f"{weather} in {other} not matching passed!")
+                logger.info(f"{weather} not in {other} test passed!")

@@ -16,6 +16,7 @@ NAME_MAP = {
     "sandstorm": "沙尘暴",
     "meteor-shower": "流星雨",
     "solarflare": "太阳耀斑",
+    "drizzle": "细雨",
     "thunderstorm": "雷雨",
     "deluge": "暴雨",
     "fair-wind": "惠风",
