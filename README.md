@@ -2,7 +2,6 @@
 
 基于 adb 实现的疯狂农场道具刷新检测&推送。
 
-
 ## Roadmap
 
 - [ ] 基于图片匹配实现天气判断
@@ -46,3 +45,7 @@ RAIN_GROUPS=12345678,87654321
 # 添加 -e / -d / -s serial / -t transportId 等
 ADB_OPTIONS=
 ```
+
+## Copyright
+
+`weather/*.png`、`pics/*.png` 均为《蛋仔派对》游戏截图，其相关版权归原所属公司所有。本项目不持有上述素材的版权，仅将其用于识别与匹配功能的实现。
