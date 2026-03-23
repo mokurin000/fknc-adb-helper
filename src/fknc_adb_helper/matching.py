@@ -5,6 +5,8 @@ import cv2 as cv
 from loguru import logger
 from cv2.typing import MatLike
 
+from fknc_adb_helper.utils import take_screenshot, sleep_until_current_10min
+
 NAME_MAP = {
     "darkfog": "暗雾",
     "eclipse": "日蚀",
@@ -22,6 +24,19 @@ _WEATHERS_LOCK = RLock()
 
 def read_gray_image(path: str | os.PathLike[str]):
     return cv.imread(path, cv.IMREAD_GRAYSCALE)
+
+
+def find_weather() -> str | None:
+    temp_path = "temp_match.png"
+    for second in range(20, 46, 5):
+        sleep_until_current_10min(second=second)
+        with open(temp_path, "wb") as f:
+            f.write(take_screenshot())
+        image = read_gray_image(path=temp_path)
+        detected = detect_weather(image)
+        if detected is not None:
+            return detected
+    return None
 
 
 def detect_weather(

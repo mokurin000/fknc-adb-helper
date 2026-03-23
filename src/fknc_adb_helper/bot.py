@@ -38,7 +38,7 @@ GROUPS_RAIN = groups_from_env("RAIN_GROUPS")
 NO_DISTURB = groups_from_env("NO_DISTURB")
 
 
-def send_message(msg: str, rain: bool = False):
+def send_message(msg: str, common: bool = False):
     """
     向预配置的群组发送推送
     """
@@ -48,7 +48,7 @@ def send_message(msg: str, rain: bool = False):
     segdata = TextSegmentData(text=msg)
     outgoing_seg = OutgoingTextSegment(data=segdata)
 
-    for group in GROUPS_REGULAR if not rain else GROUPS_RAIN:
+    for group in GROUPS_REGULAR if not common else GROUPS_RAIN:
         if utc8_time().hour < 6 and group in NO_DISTURB:
             continue
         BOT_CLIENT.send_group_message(

@@ -18,6 +18,7 @@ from fknc_adb_helper.utils import (
     fetch_screenshot,
 )
 from fknc_adb_helper.detect_item import item_exists
+from fknc_adb_helper.matching import find_weather
 
 # left, top, right, bottom (pixel)
 # for 1920x1080
@@ -269,3 +270,7 @@ def extract_info(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
             send_message(msg)
         except Exception as e:
             logger.error(f"推送失败：{e}")
+
+    weather = find_weather()
+    if weather is not None:
+        send_message(msg=weather, rain=weather not in TARGET_WEATHER)
