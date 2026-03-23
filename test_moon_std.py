@@ -1,6 +1,8 @@
 from loguru import logger
 
-from fknc_adb_helper import RecognizeType, run_ocr, init_general_ocr
+
+from fknc_adb_helper import run_ocr, RecognizeType
+from fknc_adb_helper.ocr import init_general_ocr
 
 
 def main():

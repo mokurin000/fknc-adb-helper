@@ -10,7 +10,6 @@ wheels/
 .venv
 
 /pics
-/test-pics
 /*.png
 /*.log
 

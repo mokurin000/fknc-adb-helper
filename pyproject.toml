@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-fknc-adb-helper = "fknc_adb_helper.__init__:main"
+fknc-adb-helper = "fknc_adb_helper.__main__:main"
 
 [tool.uv]
 package = true

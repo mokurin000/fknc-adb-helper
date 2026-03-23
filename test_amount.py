@@ -1,7 +1,7 @@
 from loguru import logger
 
-from fknc_adb_helper import (
-    run_ocr,
+from fknc_adb_helper import run_ocr
+from fknc_adb_helper.ocr import (
     init_general_ocr,
     init_ddddocr,
 )

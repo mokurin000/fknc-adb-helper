@@ -1,7 +1,5 @@
 import io
-import os
-import sys
-import time
+
 from enum import Enum
 from subprocess import CalledProcessError
 from datetime import datetime
@@ -14,13 +12,10 @@ from PIL import Image, ImageDraw, ImageFont
 from fknc_adb_helper.bot import send_message
 from fknc_adb_helper.ocr import (
     common_ocr,
-    init_ddddocr,
-    init_general_ocr,
 )
 from fknc_adb_helper.utils import (
     is_eggy_party,
     fetch_screenshot,
-    sleep_until_next_10min,
 )
 from fknc_adb_helper.detect_item import item_exists
 
@@ -89,9 +84,6 @@ ALIAS_MAP = {
     "白银洒水器": "地白",
     "黄金洒水器": "地金",
 }
-
-os.makedirs("pics", exist_ok=True)
-os.makedirs("test-pics", exist_ok=True)
 
 font = ImageFont.truetype("msyh.ttc", 20)  # 微软雅黑
 
@@ -278,36 +270,3 @@ def extract_info(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
             send_message(msg)
         except Exception as e:
             logger.error(f"推送失败：{e}")
-
-
-def main():
-    logger.remove()
-    logger.add(sys.stderr, level="DEBUG")
-    logger.add(
-        "ocr.log",
-        rotation="10 MB",
-        retention="7 days",
-        level="INFO",
-        enqueue=True,
-    )
-
-    time1 = time.monotonic()
-    reader = init_general_ocr()
-    num_reader = init_ddddocr()
-    time2 = time.monotonic()
-
-    logger.info(f"初始化完成，耗时{time2 - time1:.2f}s")
-
-    if "--skip-first-sleep" not in sys.argv:
-        sleep_until_next_10min()
-
-    while True:
-        extract_info(
-            reader=reader,
-            num_reader=num_reader,
-        )
-        sleep_until_next_10min()
-
-
-if __name__ == "__main__":
-    main()
