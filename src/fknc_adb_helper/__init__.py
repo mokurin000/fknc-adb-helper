@@ -10,9 +10,7 @@ from loguru import logger
 from PIL import Image, ImageDraw, ImageFont
 
 from fknc_adb_helper.bot import send_message
-from fknc_adb_helper.ocr import (
-    common_ocr,
-)
+from fknc_adb_helper.ocr import common_ocr
 from fknc_adb_helper.utils import (
     is_eggy_party,
     fetch_screenshot,
@@ -271,6 +269,7 @@ def extract_info(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
         except Exception as e:
             logger.error(f"推送失败：{e}")
 
-    weather = find_weather()
-    if weather is not None:
-        send_message(msg=weather, rain=weather not in TARGET_WEATHER)
+    for after_5min in [False, True]:
+        weather = find_weather(after_5min=after_5min)
+        if weather is not None:
+            send_message(msg=weather, common=weather not in TARGET_WEATHER)

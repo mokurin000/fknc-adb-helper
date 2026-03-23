@@ -16,6 +16,8 @@ NAME_MAP = {
     "sandstorm": "沙尘暴",
     "solarflare": "太阳耀斑",
     "thunderstorm": "雷雨",
+    "deluge": "暴雨",
+    "fair-wind": "惠风",
 }
 
 _WEATHERS = None
@@ -26,10 +28,10 @@ def read_gray_image(path: str | os.PathLike[str]):
     return cv.imread(path, cv.IMREAD_GRAYSCALE)
 
 
-def find_weather() -> str | None:
+def find_weather(after_5min: bool = False) -> str | None:
     temp_path = "temp_match.png"
     for second in range(20, 46, 5):
-        sleep_until_current_10min(second=second)
+        sleep_until_current_10min(second=second if not after_5min else second + 300)
         with open(temp_path, "wb") as f:
             f.write(take_screenshot())
         image = read_gray_image(path=temp_path)
