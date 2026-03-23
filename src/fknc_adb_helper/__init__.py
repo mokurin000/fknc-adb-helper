@@ -14,6 +14,7 @@ from fknc_adb_helper.ocr import common_ocr
 from fknc_adb_helper.utils import (
     is_eggy_party,
     fetch_screenshot,
+    utc8_time,
 )
 from fknc_adb_helper.detect_item import item_exists
 from fknc_adb_helper.matching import find_weather
@@ -269,7 +270,7 @@ def extract_info(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
         except Exception as e:
             logger.error(f"推送失败：{e}")
 
-    for after_5min in [False, True]:
+    for after_5min in [False, True] if utc8_time().min % 10 < 5 else [True]:
         weather = find_weather(after_5min=after_5min)
         if weather is not None:
             send_message(msg=weather, common=weather not in TARGET_WEATHER)

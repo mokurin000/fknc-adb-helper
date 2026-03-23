@@ -34,7 +34,7 @@ def groups_from_env(var: str) -> list[int]:
 
 BOT_CLIENT = init_client()
 GROUPS_REGULAR = groups_from_env("SUBSCRIBE_GROUPS")
-GROUPS_RAIN = groups_from_env("RAIN_GROUPS")
+GROUPS_COMMON_WEATHER = groups_from_env("COMMON_WEATHER_GROUPS")
 NO_DISTURB = groups_from_env("NO_DISTURB")
 
 
@@ -48,7 +48,7 @@ def send_message(msg: str, common: bool = False):
     segdata = TextSegmentData(text=msg)
     outgoing_seg = OutgoingTextSegment(data=segdata)
 
-    for group in GROUPS_REGULAR if not common else GROUPS_RAIN:
+    for group in GROUPS_REGULAR if not common else GROUPS_COMMON_WEATHER:
         if utc8_time().hour < 6 and group in NO_DISTURB:
             continue
         BOT_CLIENT.send_group_message(
