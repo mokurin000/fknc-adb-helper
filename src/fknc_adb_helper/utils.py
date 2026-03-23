@@ -14,6 +14,8 @@ from loguru import logger
 
 load_dotenv()
 ADB_OPTIONS = os.environ.get("ADB_OPTIONS", "")
+# Weather icon left, top, right, bottom
+WEATHER_RECT = (607, 24, 652, 69)
 
 
 def adb_command_prefix() -> list[str]:
@@ -93,7 +95,7 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
     :return: 种子截图，工具截图
     """
 
-    sleep_until_current_10min(second=4)
+    sleep_until_current_10min(second=5)
     tools = take_screenshot()
     return [], tools
 
