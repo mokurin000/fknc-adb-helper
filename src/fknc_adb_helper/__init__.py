@@ -12,12 +12,14 @@ from loguru import logger
 from PIL import Image, ImageDraw, ImageFont
 
 from fknc_adb_helper.bot import send_message
-from fknc_adb_helper.utils import (
+from fknc_adb_helper.ocr import (
     common_ocr,
-    fetch_screenshot,
     init_ddddocr,
     init_general_ocr,
+)
+from fknc_adb_helper.utils import (
     is_eggy_party,
+    fetch_screenshot,
     sleep_until_next_10min,
 )
 from fknc_adb_helper.detect_item import item_exists
@@ -97,7 +99,6 @@ font = ImageFont.truetype("msyh.ttc", 20)  # 微软雅黑
 class RecognizeType(Enum):
     ITEM = "item"
     SEED = "seed"
-    WEATHER = "weather"
 
 
 def validate_text(text: str, rec_type: RecognizeType) -> bool:
@@ -106,8 +107,6 @@ def validate_text(text: str, rec_type: RecognizeType) -> bool:
             return text in TARGET_ITEMS + ADDITION_ITEMS
         case RecognizeType.SEED:
             return text.endswith("种子") and text.removesuffix("种子") in TARGET_SEEDS
-        case RecognizeType.WEATHER:
-            return True
 
 
 def run_ocr(
@@ -177,9 +176,7 @@ def run_ocr(
                 rec_type=recognize_type,
             ):
                 region = scrshot_img.crop((left, top, right, bottom))
-                if recognize_type == RecognizeType.WEATHER:
-                    found_items[text] = ()
-                elif item_exists(region):
+                if item_exists(region):
                     if dddd is not None:
                         num_bottom = top + 10
                         num_top = num_bottom - ITEM_HEIGHT
@@ -218,7 +215,7 @@ def alias_mapping(p):
     return f"{ALIAS_MAP.get(k, k)}{v}"
 
 
-def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
+def extract_info(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
     try:
         assert is_eggy_party()
         seed_pages, tool_page = fetch_screenshot()
@@ -265,7 +262,7 @@ def call_ocr(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
             )
         )
 
-    logger.info(f"识别结果：{list(found_seeds.items())} | {list(found_tools.items())}")
+    logger.info(f"识别结果：{list(found_tools.items())}")
 
     msg = ""
 
@@ -305,7 +302,7 @@ def main():
         sleep_until_next_10min()
 
     while True:
-        call_ocr(
+        extract_info(
             reader=reader,
             num_reader=num_reader,
         )

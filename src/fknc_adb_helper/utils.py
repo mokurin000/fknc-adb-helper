@@ -5,10 +5,7 @@ import random
 from random import randint
 from datetime import datetime, timedelta, timezone
 
-import easyocr
-import ddddocr
-import numpy as np
-from PIL import Image
+
 from dotenv import load_dotenv
 from loguru import logger
 
@@ -33,28 +30,6 @@ def random_sleep(reason: str = ""):
 
 def randomize_coord(coord: int | str) -> str:
     return f"{randint(-10, 10) + coord}"
-
-
-def common_ocr(
-    reader: easyocr.Reader,
-    pic: bytes | Image.Image,
-) -> list[
-    tuple[
-        list[tuple[int, int]],
-        str,
-        np.float64,
-    ]
-]:
-    if isinstance(pic, Image.Image):
-        pic.save("temp.png")
-    elif isinstance(pic, bytes):
-        with open("temp.png", "wb") as f:
-            f.write(pic)
-    else:
-        raise TypeError()
-
-    result = reader.readtext("temp.png")
-    return result
 
 
 def is_eggy_party() -> bool:
@@ -138,25 +113,3 @@ def sleep_until_next_10min():
     logger.info(f"等待 {wait:.0f} 秒，下一次运行时间 {next_time.strftime('%H:%M:%S')}")
 
     time.sleep(wait)
-
-
-def init_ddddocr() -> ddddocr.DdddOcr:
-    logger.info("加载 DDDDOcr 模型")
-    d = ddddocr.DdddOcr(
-        beta=True,
-        use_gpu=True,
-        show_ad=False,
-    )
-    d.set_ranges(0)
-    logger.info("DDDDOcr 模型加载完成")
-    return d
-
-
-def init_general_ocr() -> easyocr.Reader:
-    logger.info("加载 OCR 模型")
-    reader = easyocr.Reader(
-        ["ch_sim"],
-        gpu=True,
-    )
-    logger.info("OCR 模型加载完成")
-    return reader
