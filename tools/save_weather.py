@@ -16,4 +16,5 @@ if len(argv) < 3:
 else:
     img = Image.open(argv[2])
 
+img.save(f"weather-test/{name}.png")
 img.crop(WEATHER_RECT).save(f"weather/{name}.png")
