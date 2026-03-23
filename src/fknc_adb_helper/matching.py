@@ -49,7 +49,7 @@ def detect_weather(
         if _WEATHERS is None:
             _WEATHERS = init_weathers()
 
-    for weather_name, template in _WEATHERS:
+    for weather_name, template in _WEATHERS.items():
         if match_object(
             image=image,
             template=template,
@@ -72,6 +72,9 @@ def init_weathers() -> dict[str, MatLike]:
         weather_name = NAME_MAP[weather_name]
 
         template = cv.imread(f"weather/{weather_img}", cv.IMREAD_GRAYSCALE)
+        if template is None:
+            logger.error(f"failed to load weather/{weather_img}")
+            continue
         weather_map[weather_name] = template
 
     return weather_map
