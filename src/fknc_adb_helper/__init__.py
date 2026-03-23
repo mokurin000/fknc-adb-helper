@@ -47,6 +47,7 @@ TARGET_ITEMS = [
     "黄金洒水器",
     "流星杖",
     "造型喷雾",
+    "农田置换卡",
     "月球白银洒水器",
     "白银洒水器",
     "月球标准洒水器",
@@ -67,7 +68,6 @@ TARGET_WEATHER = {
 }
 
 ADDITION_ITEMS = [
-    "农田置换卡",
     "引雷针",
     "火盆",
     "造雪机",
@@ -231,6 +231,7 @@ def extract_info(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
         reader,
         screenshot=tool_page,
         dddd=num_reader,
+        min_confidence=0.6,
     )
 
     tools_string = ""
