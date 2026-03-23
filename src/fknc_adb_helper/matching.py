@@ -21,8 +21,9 @@ NAME_MAP = {
     "deluge": "暴雨",
     "drizzle": "细雨",
     "snow": "雪",
-    # 生机
+    # common but useful mutations
     "fair-wind": "惠风",
+    "heatwave": "热浪",
 }
 
 _WEATHERS = None
