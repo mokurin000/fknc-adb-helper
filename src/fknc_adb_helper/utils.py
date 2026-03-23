@@ -75,9 +75,11 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
     return [], tools
 
 
-def sleep_until_current_10min(second: int = 30):
+def sleep_until_current_10min(second: int = 30) -> bool:
     """
     等待到当前 10 分钟区间内的指定秒
+
+    返回是否被跳过
     """
 
     now = datetime.now()
@@ -90,12 +92,13 @@ def sleep_until_current_10min(second: int = 30):
 
     # 如果已经过了这个时间，无需处理
     if target_time <= now:
-        return
+        return True
 
     wait = (target_time - now).total_seconds()
 
     logger.debug(f"等待 {wait:.0f}s...")
     time.sleep(wait)
+    return False
 
 
 def sleep_until_next_10min():

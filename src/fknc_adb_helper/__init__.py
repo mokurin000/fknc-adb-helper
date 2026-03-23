@@ -273,4 +273,5 @@ def extract_info(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
     for after_5min in [False, True] if utc8_time().minute % 10 < 5 else [True]:
         weather = find_weather(after_5min=after_5min)
         if weather is not None:
+            logger.info(f"天气：{weather}")
             send_message(msg=weather, common=weather not in TARGET_WEATHER)
