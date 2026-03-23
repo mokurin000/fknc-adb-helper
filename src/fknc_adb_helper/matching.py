@@ -1,4 +1,5 @@
-from os import listdir
+import os
+from threading import RLock
 
 import cv2 as cv
 from loguru import logger
@@ -16,15 +17,37 @@ NAME_MAP = {
 }
 
 _WEATHERS = None
+_WEATHERS_LOCK = RLock()
 
 
-def detect_weather(threshold: float = 0.8):
-    pass
+def read_gray_image(path: str | os.PathLike[str]):
+    return cv.imread(path, cv.IMREAD_GRAYSCALE)
+
+
+def detect_weather(
+    image: MatLike,
+    threshold: float = 0.8,
+) -> str | None:
+    global _WEATHERS
+
+    with _WEATHERS_LOCK:
+        if _WEATHERS is None:
+            _WEATHERS = init_weathers()
+
+    for weather_name, template in _WEATHERS:
+        if match_object(
+            image=image,
+            template=template,
+            threshold=threshold,
+        ):
+            return weather_name
+
+    return None
 
 
 def init_weathers() -> dict[str, MatLike]:
     weather_map = {}
-    weather_icons = listdir("weather/")
+    weather_icons = os.listdir("weather/")
     for weather_img in weather_icons:
         weather_name = weather_img.removesuffix(".png")
 

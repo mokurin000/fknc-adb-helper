@@ -53,16 +53,17 @@ TARGET_ITEMS = [
 ]
 
 TARGET_WEATHER = {
-    "雾",
     "暗雾",
     "荧光",
     "彩虹",
-    "霓虹",
     "日蚀",
     "沙尘暴",
     "流星雨",
-    "陨石雨",
     "太阳耀斑",
+    # TODO: add template icon for these weathers
+    "雾",
+    "霓虹",
+    "陨石雨",
 }
 
 ADDITION_ITEMS = [
