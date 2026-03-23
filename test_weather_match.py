@@ -15,6 +15,8 @@ def test_match(
     image = cv.imread(
         f"weather-test/{test_weather or weather}.png", cv.IMREAD_GRAYSCALE
     )
+    # image: 1920x1080
+    image = image[24:69, 572:780]
 
     if template is None or image is None:
         raise OSError("Failed to load images")

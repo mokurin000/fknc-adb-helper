@@ -60,6 +60,9 @@ def detect_weather(
         if _WEATHERS is None:
             _WEATHERS = init_weathers()
 
+    # image: 1920x1080
+    image = image[24:69, 572:780]
+
     for weather_name, template in _WEATHERS.items():
         if match_object(
             image=image,
