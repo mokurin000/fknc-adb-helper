@@ -167,7 +167,7 @@ def run_ocr(
                 text=text,
                 rec_type=recognize_type,
             ):
-                region = scrshot_img.crop((left - 5, top - 5, right + 5, bottom + 5))
+                region = scrshot_img.crop((left - 3, top - 3, right + 3, bottom + 3))
                 if item_exists(region):
                     if dddd is not None:
                         num_bottom = top + 10
