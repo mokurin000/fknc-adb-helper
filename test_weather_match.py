@@ -1,51 +1,87 @@
 import os
-
 import cv2 as cv
 from loguru import logger
 
+# Import the updated match_object that supports masks
 from fknc_adb_helper.matching import match_object
+
+
+def load_template_with_mask(weather_name: str):
+    """Load weather template + mask from PNG (supports transparency)"""
+    template_path = f"weather/{weather_name}.png"
+
+    icon = cv.imread(template_path, cv.IMREAD_UNCHANGED)
+    if icon is None:
+        raise OSError(f"Failed to load template: {template_path}")
+
+    if len(icon.shape) == 3 and icon.shape[2] == 4:  # RGBA image
+        bgr = icon[:, :, :3]
+        alpha = icon[:, :, 3]
+        template = cv.cvtColor(bgr, cv.COLOR_BGR2GRAY)
+        # Create mask: ignore nearly transparent pixels
+        _, mask = cv.threshold(alpha, 20, 255, cv.THRESH_BINARY)
+    else:
+        template = (
+            cv.cvtColor(icon, cv.COLOR_BGR2GRAY) if len(icon.shape) == 3 else icon
+        )
+        mask = None
+
+    return template, mask
 
 
 def test_match(
     weather: str,
     test_weather: str = None,
-    threshold=0.88,
+    threshold: float = 0.85,
 ):
-    template = cv.imread(f"weather/{weather}.png", cv.IMREAD_GRAYSCALE)
-    image = cv.imread(
-        f"weather-test/{test_weather or weather}.png", cv.IMREAD_GRAYSCALE
-    )
-    # image: 1920x1080
-    image = image[24:69, 572:780]
+    """Test matching with mask support"""
+    # Load template + mask
+    template, mask = load_template_with_mask(weather)
 
-    if template is None or image is None:
-        raise OSError("Failed to load images")
+    # Load test image
+    test_file = test_weather or weather
+    image_path = f"weather-test/{test_file}.png"
+
+    image = cv.imread(image_path, cv.IMREAD_COLOR)
+    if image is None:
+        raise OSError(f"Failed to load test image: {image_path}")
+
+    # Crop to weather area (1920x1080 resolution)
+    image = image[24:69, 572:780]
+    gray_image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
     return match_object(
-        image=image,
+        image=gray_image,
         template=template,
+        mask=mask,
         threshold=threshold,
     )
 
 
 if __name__ == "__main__":
-    test_pics = [w.removesuffix(".png") for w in os.listdir("weather-test")]
+    # Get all test images
+    test_pics = [
+        w.removesuffix(".png") for w in os.listdir("weather-test") if w.endswith(".png")
+    ]
 
-    # matching test
+    print(f"Starting weather matching test with {len(test_pics)} images...\n")
+
     for weather in test_pics:
         try:
-            assert test_match(weather)
-        except AssertionError:
-            logger.error(f"{weather} matching failed!")
-        else:
+            result = test_match(weather)
+            assert result, f"{weather} should match itself"
             logger.info(f"{weather} matching passed!")
+        except Exception as e:
+            logger.error(f"{weather} matching failed! Error: {e}")
 
-        others = set(test_pics)
-        others.remove(weather)
+        # Test that it does NOT match other weather icons
+        others = set(test_pics) - {weather}
         for other in others:
             try:
-                assert not test_match(weather, test_weather=other)
-            except AssertionError:
-                logger.error(f"{weather} not in {other} test failed!")
-            else:
-                logger.info(f"{weather} not in {other} test passed!")
+                result = test_match(weather, test_weather=other)
+                assert not result, f"{weather} should NOT match {other}"
+                logger.info(f"{weather} vs {other} -> correctly not matched")
+            except Exception as e:
+                logger.error(f"{weather} vs {other} test failed! Error: {e}")
+
+    logger.info("matching test completed!")

@@ -9,13 +9,13 @@ def main():
     detected = detect_weather(image)
 
     assert "细雨" in detected
-    assert len(detected) == 1
+    assert len(detected) == 1, f"{detected}"
 
     image = cv.imread("test/weather2_cold.png", cv.IMREAD_GRAYSCALE)
     detected = detect_weather(image)
 
     assert "暴雨" in detected
-    assert len(detected) == 1
+    assert len(detected) == 1, f"{detected}"
 
     logger.info("test passed!")
 
