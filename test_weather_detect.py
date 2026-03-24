@@ -6,12 +6,18 @@ from fknc_adb_helper.matching import detect_weather
 
 def main():
     image = cv.imread("test/weather2.png", cv.IMREAD_GRAYSCALE)
-    detected = detect_weather(image)
+    detected = detect_weather(image, threshold=0.95)
 
     assert "热浪" in detected
     assert "细雨" in detected
 
     assert len(detected) == 2
+
+    image = cv.imread("test/weather2_cold.png", cv.IMREAD_GRAYSCALE)
+    detected = detect_weather(image)
+
+    assert "极寒" in detected
+    assert "暴雨" in detected
 
     logger.info("test passed!")
 

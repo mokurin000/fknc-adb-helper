@@ -25,6 +25,7 @@ NAME_MAP = {
     # common but useful mutations
     "fair-wind": "惠风",
     "heatwave": "热浪",
+    "cold": "极寒",
 }
 
 _WEATHERS = None
@@ -106,16 +107,6 @@ def match_object(
 ):
 
     res = cv.matchTemplate(image, template, cv.TM_CCOEFF_NORMED)
-    _, max_val, _, max_loc = cv.minMaxLoc(res)
+    _, max_val, _, _max_loc = cv.minMaxLoc(res)
 
-    if max_val >= threshold:
-        h, w = template.shape
-        top_left = max_loc
-        bottom_right = (top_left[0] + w, top_left[1] + h)
-
-        image_color = cv.cvtColor(image, cv.COLOR_GRAY2BGR)
-        cv.rectangle(image_color, top_left, bottom_right, (0, 255, 0), 2)
-
-        return True
-    else:
-        return False
+    return max_val >= threshold

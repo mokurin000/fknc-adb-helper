@@ -9,7 +9,7 @@ from fknc_adb_helper.matching import match_object
 def test_match(
     weather: str,
     test_weather: str = None,
-    threshold=0.8,
+    threshold=0.88,
 ):
     template = cv.imread(f"weather/{weather}.png", cv.IMREAD_GRAYSCALE)
     image = cv.imread(
