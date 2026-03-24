@@ -72,7 +72,7 @@ def stuck_watchdog():
 
     last_screenshot = take_screenshot()
     while True:
-        time.sleep(30)
+        time.sleep(10.0)
         screenshot = take_screenshot()
         if screenshot == last_screenshot:
             restart_app(f"{utc8_time()}\n游戏画面卡死，请操作登录！")
