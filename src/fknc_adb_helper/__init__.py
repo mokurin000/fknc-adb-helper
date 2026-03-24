@@ -62,9 +62,9 @@ TARGET_WEATHER = {
     "沙尘暴",
     "流星雨",
     "太阳耀斑",
+    "陨石雨",
     # TODO: add template icon for these weathers
     "霓虹",
-    "陨石雨",
 }
 
 ADDITION_ITEMS = [

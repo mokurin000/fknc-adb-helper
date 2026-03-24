@@ -16,6 +16,7 @@ NAME_MAP = {
     "sandstorm": "沙尘暴",
     "meteor-shower": "流星雨",
     "solarflare": "太阳耀斑",
+    "meteorite": "陨石雨",
     # growth speed
     "thunderstorm": "雷雨",
     "deluge": "暴雨",
