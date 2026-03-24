@@ -24,8 +24,6 @@ NAME_MAP = {
     "snow": "雪",
     # common but useful mutations
     "fair-wind": "惠风",
-    "heatwave": "热浪",
-    "cold": "极寒",
 }
 
 _WEATHERS = None
@@ -58,7 +56,7 @@ def find_weather(after_5min: bool = False) -> list[str]:
 
 def detect_weather(
     image: MatLike,
-    threshold: float = 0.8,
+    threshold: float = 0.9
 ) -> list[str]:
     global _WEATHERS
 
