@@ -162,11 +162,12 @@ def run_ocr(
                 .replace("曰", "日")
                 .replace("壬", "王")
             )
+
             if validate_text(
                 text=text,
                 rec_type=recognize_type,
             ):
-                region = scrshot_img.crop((left, top, right, bottom))
+                region = scrshot_img.crop((left - 5, top - 5, right + 5, bottom + 5))
                 if item_exists(region):
                     if dddd is not None:
                         num_bottom = top + 10
@@ -189,6 +190,9 @@ def run_ocr(
                         found_items[text] = result
                     else:
                         found_items[text] = ()
+                else:
+                    region.save(f"{text}-non-existing.png")
+                    logger.debug(f"skip non-existing: {text}")
 
         if SAVE_RESULT:
             img.save(filename)
