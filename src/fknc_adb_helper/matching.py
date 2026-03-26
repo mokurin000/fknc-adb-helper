@@ -120,7 +120,7 @@ def find_weather(after_5min: bool = False) -> list[str]:
     """Try to detect weather multiple times around the 10-minute mark"""
     temp_path = "temp_match.png"
 
-    for second in range(30, 51, 5):
+    for second in range(30, 61, 5):
         skipped = sleep_until_current_10min(
             second=second if not after_5min else second + 300
         )
