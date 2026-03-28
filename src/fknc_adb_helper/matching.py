@@ -15,6 +15,7 @@ NAME_MAP = {
     "meteor-shower": "流星雨",
     "solarflare": "太阳耀斑",
     "meteorite": "陨石雨",
+    "neon":"霓虹",
     # growth speed
     "thunderstorm": "雷雨",
     "deluge": "暴雨",
