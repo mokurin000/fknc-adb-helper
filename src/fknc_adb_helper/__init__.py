@@ -18,13 +18,11 @@ from fknc_adb_helper.utils import (
 )
 from fknc_adb_helper.detect_item import item_exists
 from fknc_adb_helper.matching import find_weather
+from fknc_adb_helper.config import SAVE_RESULT, SAVE_SCREENSHOTS
 
 # left, top, right, bottom (pixel)
 # for 1920x1080
 STORE_RECT = (1149, 345, 1149 + 593, 345 + 688)
-
-SAVE_SCREENSHOTS = False
-SAVE_RESULT = True
 
 ITEM_BG_WIDTH = 165
 ITEM_PRICE_WIDTH = 30

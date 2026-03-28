@@ -1,9 +1,13 @@
 import os
+from datetime import datetime
 from threading import RLock
+
 import cv2 as cv
 from loguru import logger
 from cv2.typing import MatLike
+
 from fknc_adb_helper.utils import take_screenshot, sleep_until_current_10min
+from fknc_adb_helper.config import SAVE_RESULT
 
 NAME_MAP = {
     "darkfog": "暗雾",
@@ -15,7 +19,7 @@ NAME_MAP = {
     "meteor-shower": "流星雨",
     "solarflare": "太阳耀斑",
     "meteorite": "陨石雨",
-    "neon":"霓虹",
+    "neon": "霓虹",
     # growth speed
     "thunderstorm": "雷雨",
     "deluge": "暴雨",
@@ -97,6 +101,11 @@ def detect_weather(image: MatLike, threshold: float = 0.85) -> list[str]:
 
     # ROI region crop
     weather_region = image[24:69, 572:780]
+
+    if SAVE_RESULT:
+        ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
+        filename = f"pics/{ts}-weather-result.png"
+        cv.imwrite(filename, img=weather_region)
 
     # Convert to grayscale for matching
     if len(weather_region.shape) == 3:

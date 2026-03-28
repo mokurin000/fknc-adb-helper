@@ -1,0 +1,2 @@
+SAVE_SCREENSHOTS = False
+SAVE_RESULT = True
