@@ -102,11 +102,6 @@ def detect_weather(image: MatLike, threshold: float = 0.85) -> list[str]:
     # ROI region crop
     weather_region = image[24:69, 572:780]
 
-    if SAVE_RESULT:
-        ts = datetime.now().strftime("%Y-%m-%d-%H_%M")
-        filename = f"pics/{ts}-weather-result.png"
-        cv.imwrite(filename, img=weather_region)
-
     # Convert to grayscale for matching
     if len(weather_region.shape) == 3:
         gray_image = cv.cvtColor(weather_region, cv.COLOR_BGR2GRAY)
@@ -122,6 +117,11 @@ def detect_weather(image: MatLike, threshold: float = 0.85) -> list[str]:
             threshold=threshold,
         ):
             detected.append(weather_name)
+
+    if detected and SAVE_RESULT:
+        ts = datetime.now().strftime("%Y-%m-%d-%H_%M_%S")
+        filename = f"pics/{ts}-weather-result.png"
+        cv.imwrite(filename, img=weather_region)
 
     return detected
 
