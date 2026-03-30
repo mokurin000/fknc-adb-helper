@@ -165,30 +165,31 @@ def run_ocr(
                 rec_type=recognize_type,
             ):
                 region = scrshot_img.crop((left - 3, top - 3, right + 3, bottom + 3))
-                if item_exists(region):
-                    if dddd is not None:
-                        num_bottom = top + 10
-                        num_top = num_bottom - ITEM_HEIGHT
-                        num_left = (left + right - ITEM_BG_WIDTH) // 2
-                        num_right = num_left + ITEM_PRICE_WIDTH
 
-                        num_region = scrshot_img.crop(
-                            (num_left, num_top, num_right, num_bottom)
-                        )
+                if dddd is not None:
+                    num_bottom = top + 10
+                    num_top = num_bottom - ITEM_HEIGHT
+                    num_left = (left + right - ITEM_BG_WIDTH) // 2
+                    num_right = num_left + ITEM_PRICE_WIDTH
 
-                        if save_dddd_rect:
-                            num_region.save(f"dddd-{text}.png")
+                    num_region = scrshot_img.crop(
+                        (num_left, num_top, num_right, num_bottom)
+                    )
 
-                        try:
-                            result = int(dddd.classification(num_region))
-                        except Exception as e:
-                            logger.error(f"{e}")
-                            result = 1
-                        found_items[text] = result
+                    if save_dddd_rect:
+                        num_region.save(f"dddd-{text}.png")
+
+                    try:
+                        raw = dddd.classification(num_region).replace("O", "0")
+                        result = int(raw)
+                    except Exception as e:
+                        logger.error(f"skip {text}: {e}")
                     else:
-                        found_items[text] = ()
+                        if result:
+                            found_items[text] = result
+                elif item_exists(region):
+                    found_items[text] = ()
                 else:
-                    region.save(f"{text}-non-existing.png")
                     logger.debug(f"skip non-existing: {text}")
 
         if SAVE_RESULT:
