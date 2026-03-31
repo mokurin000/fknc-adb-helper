@@ -209,7 +209,7 @@ def alias_mapping(p):
 
 
 def extract_info(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
-    if os.listdir("."):
+    if "login.lock" in os.listdir("."):
         logger.error("watchdog 检测到异常，请在登入商店界面后移除 login.lock ！")
         return
     try:
