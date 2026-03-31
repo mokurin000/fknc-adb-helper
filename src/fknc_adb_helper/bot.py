@@ -1,7 +1,9 @@
 import os
 
-from milky import MilkyClient, OutgoingTextSegment, TextSegmentData
 from dotenv import load_dotenv
+from milky.client import MilkyError
+from milky import MilkyClient, OutgoingTextSegment, TextSegmentData
+
 from fknc_adb_helper.utils import utc8_time
 
 load_dotenv()
@@ -51,7 +53,10 @@ def send_message(msg: str, common: bool = False):
     for group in GROUPS_REGULAR if not common else GROUPS_COMMON_WEATHER:
         if utc8_time().hour < 6 and group in NO_DISTURB:
             continue
-        BOT_CLIENT.send_group_message(
-            group_id=group,
-            message=[outgoing_seg],
-        )
+        try:
+            BOT_CLIENT.send_group_message(
+                group_id=group,
+                message=[outgoing_seg],
+            )
+        except MilkyError:
+            pass
