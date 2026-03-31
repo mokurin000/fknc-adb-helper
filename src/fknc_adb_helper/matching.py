@@ -92,7 +92,7 @@ def match_object(
     return max_val >= threshold
 
 
-def detect_weather(image: MatLike, threshold: float = 0.85) -> list[str]:
+def detect_weather(image: MatLike, threshold: float = 0.9) -> list[str]:
     """Detect weather from screenshot using templates with transparency support"""
     global _WEATHERS
     with _WEATHERS_LOCK:

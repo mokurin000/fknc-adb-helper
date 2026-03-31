@@ -32,7 +32,7 @@ def load_template_with_mask(weather_name: str):
 def test_match(
     weather: str,
     test_weather: str = None,
-    threshold: float = 0.85,
+    threshold: float = 0.9,
 ):
     """Test matching with mask support"""
     # Load template + mask
