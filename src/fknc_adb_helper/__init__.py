@@ -1,5 +1,5 @@
 import io
-
+import os
 from enum import Enum
 from subprocess import CalledProcessError
 from datetime import datetime
@@ -209,6 +209,9 @@ def alias_mapping(p):
 
 
 def extract_info(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
+    if os.listdir("."):
+        logger.error("watchdog 检测到异常，请在登入商店界面后移除 login.lock ！")
+        return
     try:
         assert is_eggy_party()
         seed_pages, tool_page = fetch_screenshot()

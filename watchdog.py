@@ -43,6 +43,9 @@ def restart_app(notify: str):
         except MilkyHttpError | MilkyError as e:
             logger.error(f"推送失败：{e}")
 
+    with open("login.lock", "w", encoding="utf-88"):
+        pass
+
     logger.info("killing process...")
     subprocess.run(
         adb_command_prefix() + ["shell", "am", "force-stop", PACKAGE],

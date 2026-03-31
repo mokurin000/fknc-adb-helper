@@ -10,7 +10,7 @@ from fknc_adb_helper.utils import take_screenshot, sleep_until_current_10min
 from fknc_adb_helper.config import SAVE_RESULT
 
 NAME_MAP = {
-    # "darkfog": "暗雾",
+    "darkfog": "暗雾",
     "fog": "雾",
     "firefly": "荧光",
     "rainball": "彩虹",

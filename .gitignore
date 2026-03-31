@@ -14,3 +14,5 @@ wheels/
 /*.log
 
 /.env
+
+/login.lock
