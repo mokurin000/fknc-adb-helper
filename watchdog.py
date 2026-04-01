@@ -43,7 +43,7 @@ def restart_app(notify: str):
         except MilkyHttpError | MilkyError as e:
             logger.error(f"推送失败：{e}")
 
-    with open("login.lock", "w", encoding="utf-88"):
+    with open("login.lock", "wb"):
         pass
 
     logger.info("killing process...")
@@ -85,37 +85,43 @@ def stuck_watchdog():
 def anr_watchdog():
     logger.info("starting ANR watchdog...")
 
-    # clean logcat buffer before first run
-    subprocess.run(adb_command_prefix() + ["logcat", "-c"], capture_output=True)
+    while True:
+        try:
+            # clean logcat buffer before first run
+            subprocess.run(adb_command_prefix() + ["logcat", "-c"], capture_output=True)
 
-    proc = subprocess.Popen(
-        adb_command_prefix() + ["logcat"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        encoding="utf-8",
-        bufsize=1,
-    )
-    last_anr_time = None
+            proc = subprocess.Popen(
+                adb_command_prefix() + ["logcat"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding="utf-8",
+                bufsize=1,
+            )
+            last_anr_time = None
 
-    for line in proc.stdout:
-        if "WindowManager: ANR in" not in line:
-            continue
+            for line in proc.stdout:
+                if "WindowManager: ANR in" not in line:
+                    continue
 
-        if PACKAGE not in line:
-            continue
+                if PACKAGE not in line:
+                    continue
 
-        anr_time = parse_time(line)
-        if not anr_time:
-            continue
+                anr_time = parse_time(line)
+                if not anr_time:
+                    continue
 
-        if last_anr_time == anr_time:
-            continue
+                if last_anr_time == anr_time:
+                    continue
 
-        last_anr_time = anr_time
+                last_anr_time = anr_time
 
-        logger.info(f"detected ANR at {anr_time}")
-        restart_app(f"{anr_time}\n游戏进程由于 ANR 已重启，请操作登录！")
+                logger.info(f"detected ANR at {anr_time}")
+                restart_app(f"{anr_time}\n游戏进程由于 ANR 已重启，请操作登录！")
+        # decode error
+        except Exception as e:
+            logger.warning(f"error occured: {e}, restarting ANR watchdog")
+            pass
 
 
 def main():
