@@ -43,7 +43,7 @@ def restart_app(notify: str):
         except MilkyHttpError | MilkyError as e:
             logger.error(f"推送失败：{e}")
 
-    with open("login.lock", "wb"):
+    with open("login.lock", "w", encoding="utf-8"):
         pass
 
     logger.info("killing process...")
