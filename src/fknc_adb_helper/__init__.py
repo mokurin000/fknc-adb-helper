@@ -276,6 +276,8 @@ def extract_info(reader: easyocr.Reader, num_reader: ddddocr.DdddOcr):
         except Exception as e:
             logger.error(f"推送失败：{e}")
 
+    return
+    # FIXME: false-positive detection on pure white area
     last = ""
     for after_5min in [False, True] if utc8_time().minute % 10 < 5 else [True]:
         weathers = find_weather(after_5min=after_5min)
