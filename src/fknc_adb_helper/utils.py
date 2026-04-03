@@ -70,7 +70,7 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
     :return: 种子截图，工具截图
     """
 
-    sleep_until_current_10min(second=8)
+    sleep_until_current_10min(second=15)
     tools = take_screenshot()
     return [], tools
 
