@@ -38,7 +38,7 @@ def is_eggy_party() -> bool:
             adb_command_prefix()
             + [
                 "shell",
-                "dumpsys activity | grep -E 'mCurrentFocus' | grep 'com.netease.party/com.netease.party.Client'",
+                "dumpsys activity top | grep 'ACTIVITY com.netease.party/.Client'",
             ],
             stdout=subprocess.PIPE,
         )
