@@ -51,7 +51,7 @@ def take_screenshot() -> bytes:
     获取当前屏幕截图，返回PNG字节
     """
     return subprocess.run(
-        adb_command_prefix() + ["exec-out", "screencap", "-p"],
+        adb_command_prefix() + ["exec-out", "sh", "-c", "screencap -p 2> /dev/null"],
         stdout=subprocess.PIPE,
         check=True,
     ).stdout

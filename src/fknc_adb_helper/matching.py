@@ -100,6 +100,7 @@ def detect_weather(image: MatLike, threshold: float = 0.9) -> list[str]:
             _WEATHERS = init_weathers()
 
     # ROI region crop
+    # TODO: after SIFT refactor, adjust for 2160x1080
     weather_region = image[24:69, 572:780]
 
     # Convert to grayscale for matching

@@ -19,14 +19,12 @@ from fknc_adb_helper.utils import (
 from fknc_adb_helper.detect_item import item_exists
 from fknc_adb_helper.matching import find_weather
 from fknc_adb_helper.config import SAVE_RESULT, SAVE_SCREENSHOTS
-
-# left, top, right, bottom (pixel)
-# for 1920x1080
-STORE_RECT = (1149, 345, 1149 + 593, 345 + 688)
-
-ITEM_BG_WIDTH = 165
-ITEM_PRICE_WIDTH = 30
-ITEM_HEIGHT = 40
+from fknc_adb_helper.constant import (
+    ITEM_BG_WIDTH,
+    ITEM_PRICE_HEIGHT,
+    ITEM_PRICE_WIDTH,
+    STORE_RECT,
+)
 
 TARGET_SEEDS = [
     "草莓",
@@ -167,8 +165,8 @@ def run_ocr(
                 region = scrshot_img.crop((left - 3, top - 3, right + 3, bottom + 3))
 
                 if dddd is not None:
-                    num_bottom = top + 10
-                    num_top = num_bottom - ITEM_HEIGHT
+                    num_bottom = top + 5
+                    num_top = num_bottom - ITEM_PRICE_HEIGHT
                     num_left = (left + right - ITEM_BG_WIDTH) // 2
                     num_right = num_left + ITEM_PRICE_WIDTH
 
