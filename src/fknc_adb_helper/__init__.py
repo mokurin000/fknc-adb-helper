@@ -180,7 +180,11 @@ def run_ocr(
                         num_region.save(f"dddd-{text}.png")
 
                     try:
-                        raw = dddd.classification(num_region).replace("O", "0")
+                        raw = (
+                            dddd.classification(num_region)
+                            .replace("O", "0")
+                            .replace("Q", "0")
+                        )
                         result = int(raw)
                     except Exception as e:
                         logger.error(f"skip {text}: {e}")

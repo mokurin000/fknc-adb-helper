@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import subprocess
 from datetime import datetime
 from threading import Thread
@@ -125,6 +126,16 @@ def anr_watchdog():
 
 
 def main():
+    logger.remove()
+    logger.add(sys.stderr, level="DEBUG")
+    logger.add(
+        "watchdog.log",
+        rotation="10 MB",
+        retention="7 days",
+        level="INFO",
+        enqueue=True,
+    )
+
     threads: list[Thread] = []
 
     for func in [
