@@ -1,11 +1,12 @@
 import os
+import gc
 import time
 import subprocess
 import random
 from random import randint
 from datetime import datetime, timedelta, timezone
 
-
+import torch
 from dotenv import load_dotenv
 from loguru import logger
 
@@ -70,7 +71,7 @@ def fetch_screenshot() -> tuple[list[bytes], bytes]:
     :return: 种子截图，工具截图
     """
 
-    sleep_until_current_10min(second=15)
+    sleep_until_current_10min(second=5)
     tools = take_screenshot()
     return [], tools
 
@@ -116,3 +117,9 @@ def sleep_until_next_10min():
     logger.info(f"等待 {wait:.0f} 秒，下一次运行时间 {next_time.strftime('%H:%M:%S')}")
 
     time.sleep(wait)
+
+
+def cleanup_unused_memory():
+    logger.info("清理未使用内存...")
+    gc.collect()
+    torch.cuda.empty_cache()

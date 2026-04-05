@@ -6,7 +6,7 @@ from loguru import logger
 
 from fknc_adb_helper import extract_info
 from fknc_adb_helper.ocr import init_ddddocr, init_general_ocr
-from fknc_adb_helper.utils import sleep_until_next_10min
+from fknc_adb_helper.utils import sleep_until_next_10min, cleanup_unused_memory
 
 
 def main():
@@ -37,6 +37,7 @@ def main():
             reader=reader,
             num_reader=num_reader,
         )
+        cleanup_unused_memory()
         sleep_until_next_10min()
 
 
