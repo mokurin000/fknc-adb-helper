@@ -181,6 +181,7 @@ def run_ocr(
                         raw = (
                             dddd.classification(num_region)
                             .replace("O", "0")
+                            .replace("o", "0")
                             .replace("Q", "0")
                         )
                         result = int(raw)
